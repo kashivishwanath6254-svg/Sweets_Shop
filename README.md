@@ -44,3 +44,11 @@ This project is currently under active development and is intended as a learning
 cd backend
 npm install
 npm run dev
+```
+
+### Frontend
+```bash
+cd backend
+npm install
+npm run dev
+```
