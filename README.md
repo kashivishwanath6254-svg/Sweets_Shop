@@ -10,7 +10,7 @@ This project is currently under active development and is intended as a learning
 ### Frontend
 - React (Vite)
 - React Router
-- CSS
+- Tailwindcss
 - JavaScript (ES6+)
 
 ### Backend
