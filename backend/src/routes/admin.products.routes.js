@@ -18,10 +18,10 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const product = await Product.create(req.body);
-    return res.status(200).json(product);
+    return res.status(201).json(product);
   } catch (error) {
     console.error("Error adding product:", error);
-    return res.status(500).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 });
 
@@ -39,12 +39,12 @@ router.put("/:id", async (req, res) => {
     return res.status(200).json(updatedProduct);
   } catch (error) {
     console.error("Error updating product:", error);
-    return res.status(500).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 });
 
 //DELETE: Remove a product
-router.put("/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
