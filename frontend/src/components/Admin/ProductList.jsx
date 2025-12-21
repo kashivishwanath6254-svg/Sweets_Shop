@@ -19,7 +19,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
       <div className="text-center py-16 bg-white rounded-2xl shadow-sm border-2 border-dashed border-amber-200">
         <div className="text-5xl mb-4">🍬</div>
         <p className="text-amber-700 font-medium mb-2">
-          No sweet products found
+          No products found
         </p>
         <p className="text-amber-500 text-sm">
           Start by adding your products to the collection
