@@ -8,6 +8,7 @@ import Home from "../pages/Home";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Products from "../pages/Products";
+import AdminPanel from "../pages/AdminPanel";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -16,6 +17,7 @@ const router = createBrowserRouter(
       <Route path="about" element={<About />} />
       <Route path="contact" element={<Contact />} />
       <Route path="products" element={<Products />} />
+      <Route path="admin" element={<AdminPanel />} />
     </Route>
   )
 );

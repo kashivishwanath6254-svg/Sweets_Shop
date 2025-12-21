@@ -4,8 +4,8 @@ import { useState } from "react";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const links = ["/", "/products", "/about", "/contact"];
-  const labels = ["Home", "Products", "About Us", "Contact Us"];
+  const links = ["/", "/products", "/about", "/contact","/admin"];
+  const labels = ["Home", "Products", "About Us", "Contact Us","Admin"];
 
   return (
     <nav className="bg-linear-to-r from-amber-900 to-amber-800 shadow-2xl sticky top-0 w-full z-50 border-b border-amber-500/30">
