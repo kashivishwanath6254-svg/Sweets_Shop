@@ -24,14 +24,13 @@ This project is currently under active development and is intended as a learning
 ## 🚀 Features
 
 ### Current
-- Product listing (static / seeded data)
+- Product listing
 - Frontend routing
 - Backend API structure
 - MongoDB connection setup
 
 ### Planned
 - Authentication (Admin / User)
-- Cart and checkout flow
 - Admin product management
 - Order handling
 - Deployment
@@ -48,7 +47,7 @@ npm run dev
 
 ### Frontend
 ```bash
-cd backend
+cd frontend
 npm install
 npm run dev
 ```
