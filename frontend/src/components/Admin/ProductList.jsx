@@ -18,9 +18,7 @@ function ProductList({ products, loading, onEdit, onDelete }) {
     return (
       <div className="text-center py-16 bg-white rounded-2xl shadow-sm border-2 border-dashed border-amber-200">
         <div className="text-5xl mb-4">🍬</div>
-        <p className="text-amber-700 font-medium mb-2">
-          No products found
-        </p>
+        <p className="text-amber-700 font-medium mb-2">No products found</p>
         <p className="text-amber-500 text-sm">
           Start by adding your products to the collection
         </p>
@@ -36,11 +34,11 @@ function ProductList({ products, loading, onEdit, onDelete }) {
 
   const getCategoryColor = (category) => {
     const colors = {
-      "Sweets": "from-amber-500 to-orange-400",
+      Sweets: "from-amber-500 to-orange-400",
       "Dry Sweets": "from-amber-400 to-amber-300",
-      "Cakes": "from-purple-400 to-pink-400",
-      "Seasonal": "from-green-400 to-emerald-400",
-      "Traditional": "from-amber-600 to-amber-500",
+      Cakes: "from-purple-400 to-pink-400",
+      Seasonal: "from-green-400 to-emerald-400",
+      Traditional: "from-amber-600 to-amber-500",
     };
     return colors[category] || "from-gray-400 to-gray-300";
   };
