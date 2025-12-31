@@ -18,6 +18,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
     if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
       e.price = "Valid price is required";
     if (!formData.description.trim()) e.description = "Description is required";
+    if(!formData.category.trim()) e.category = "Category is required"
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -127,13 +128,17 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
           {/* Category */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-amber-800">
-              Category
+              Category <span className="text-red-500">*</span>
             </label>
             <select
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-white"
+              className={`w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 ${
+                errors.category
+                  ? "border-red-300 bg-red-50"
+                  : "border-amber-200 bg-white"
+              }`}
             >
               <option value="">Select a category</option>
               <option value="Sweets">Sweets</option>
@@ -142,6 +147,12 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
               <option value="Seasonal">🍂 Seasonal</option>
               <option value="Traditional">👑 Traditional</option> */}
             </select>
+            {errors.category && (
+              <div className="flex items-center gap-2 text-red-600 text-sm">
+                <span>⚠️</span>
+                <span>{errors.category}</span>
+              </div>
+            )}
           </div>
 
           {/* Image URL */}
