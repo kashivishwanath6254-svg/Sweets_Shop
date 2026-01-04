@@ -1,7 +1,9 @@
-// src/components/admin/ProductList.jsx
+// Displays product table inside Admin Panel
+// Supports edit + delete actions
 
 function ProductList({ products, loading, onEdit, onDelete }) {
-  if (loading && products.length === 0) {
+  // Loading skeleton state while fetching from backend
+  if (loading) {
     return (
       <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-amber-200">
         <div className="flex flex-col items-center gap-3">
@@ -14,7 +16,8 @@ function ProductList({ products, loading, onEdit, onDelete }) {
     );
   }
 
-  if (products.length === 0) {
+  // Empty state UI message when no products exist
+  if (!products || products.length === 0) {
     return (
       <div className="text-center py-16 bg-white rounded-2xl shadow-sm border-2 border-dashed border-amber-200">
         <div className="text-5xl mb-4">🍬</div>
@@ -26,12 +29,14 @@ function ProductList({ products, loading, onEdit, onDelete }) {
     );
   }
 
+  // Confirm deletion to avoid accidental product removal
   const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this sweet product?")) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       onDelete(id);
     }
   };
 
+  // Setting gradient color based on category
   const getCategoryColor = (category) => {
     const colors = {
       Sweets: "from-amber-500 to-orange-400",

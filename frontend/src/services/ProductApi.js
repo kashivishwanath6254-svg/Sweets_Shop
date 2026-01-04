@@ -40,7 +40,7 @@ export const ProductApi = {
     return updatedProduct;
   },
 
-  deleteProduct: async (id) => { 
+  deleteProduct: async (id) => {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
       headers: { "Content-type": "application/json" },

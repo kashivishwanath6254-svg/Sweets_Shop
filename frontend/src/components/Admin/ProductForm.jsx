@@ -1,7 +1,11 @@
-// src/components/admin/ProductForm.jsx
+// Form used for both Add and Edit product operations in Admin panel
+// Controlled form with local state + validation
+
 import { useState } from "react";
 
 function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
+  // Local form state (controlled inputs)
+  // When editing, we pre-fill using initialData
   const [formData, setFormData] = useState({
     name: initialData.name || "",
     price: initialData.price || "",
@@ -10,35 +14,65 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
     description: initialData.description || "",
   });
 
+  // Validation error messages for each field
   const [errors, setErrors] = useState({});
 
+  // Client-side validation before sending to backend
   const validate = () => {
-    const e = {};
-    if (!formData.name.trim()) e.name = "Product name is required";
-    if (!formData.price || isNaN(formData.price) || Number(formData.price) <= 0)
-      e.price = "Valid price is required";
-    if (!formData.description.trim()) e.description = "Description is required";
-    if(!formData.category.trim()) e.category = "Category is required"
+    const newErrors = {};
 
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    if (!formData.name.trim()) {
+      newErrors.name = "Product name is required";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
+    }
+
+    if (!formData.category.trim()) {
+      newErrors.category = "Category is required";
+    }
+
+    if (!formData.price) {
+      newErrors.price = "Price is required";
+    } else if (Number.isNaN(Number(formData.price))) {
+      newErrors.price = "Price must be a number";
+    } else if (Number(formData.price) <= 0) {
+      newErrors.price = "Price must be a positive value";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Update form state when user types
+  // Also clears the error for that specific field
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Handle submit button click
+  // Prevents reload and runs validation
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
     if (!validate()) return;
 
     onSubmit({
       ...formData,
-      price: Number(formData.price),
+      price: Number(formData.price), // price must be numeric before sending to backend
     });
   };
 

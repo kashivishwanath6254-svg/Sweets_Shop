@@ -1,16 +1,30 @@
-// src/pages/AdminPanel.jsx
+// Main Admin Dashboard Page
+// Handles modes: view / add / edit
+// Acts as state manager for ProductForm + ProductList
+
 import { useEffect, useState } from "react";
 import { ProductApi } from "../services/ProductApi.js";
 import ProductList from "../components/Admin/ProductList.jsx";
 import ProductForm from "../components/Admin/ProductForm.jsx";
 
 function AdminPanel() {
+  // UI mode controls what is shown
+  // view = product table
+  // add = blank form
+  // edit = prefilled form
   const [mode, setMode] = useState("view"); // 'view' | 'add' | 'edit'
+
+  // Stores the products fetched from backend
   const [products, setProducts] = useState([]);
+
+  //Stores the product currently being edited
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Loading and error states for async operations
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  //Fetching products from backend
   const loadProducts = async () => {
     setLoading(true);
     setError("");
@@ -25,22 +39,26 @@ function AdminPanel() {
     }
   };
 
+  //Loading all the products on first page load
   useEffect(() => {
     loadProducts();
   }, []);
 
+  //Switch UI to add product mode
   const handleAddClick = () => {
     setMode("add");
     setSelectedProduct(null);
     setError("");
   };
 
+  //Switch UI to edit product mode
   const handleEditClick = (product) => {
     setMode("edit");
     setSelectedProduct(product);
     setError("");
   };
 
+  //Delete the product and referesh list
   const handleDelete = async (id) => {
     setLoading(true);
     setError("");
@@ -55,6 +73,8 @@ function AdminPanel() {
     }
   };
 
+  // Handles Add + Edit submission
+  // Backend logic decided based on mode
   const handleFormSubmit = async (formData) => {
     setLoading(true);
     setError("");
@@ -77,6 +97,7 @@ function AdminPanel() {
     }
   };
 
+  // Reset back to view mode
   const handleCancel = () => {
     setMode("view");
     setSelectedProduct(null);
