@@ -1,11 +1,23 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { isAdminAuthenticated } from "../utils/auth.js";
 
 function Navbar() {
+  const isLoggedIn = isAdminAuthenticated();
+  const navigate = useNavigate();
+  const handleLogin = () => {
+    navigate("/admin/login");
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("isAdmin");
+    sessionStorage.removeItem("isAdmin");
+    navigate("/admin/login");
+  };
+
   const [isOpen, setIsOpen] = useState(false);
 
-  const links = ["/", "/products", "/about", "/contact","/admin"];
-  const labels = ["Home", "Products", "About Us", "Contact Us","Admin"];
+  const links = ["/", "/products", "/about", "/contact", "/admin"];
+  const labels = ["Home", "Products", "About Us", "Contact Us", "Admin"];
 
   return (
     <nav className="bg-linear-to-r from-amber-900 to-amber-800 shadow-2xl sticky top-0 w-full z-50 border-b border-amber-500/30">
@@ -47,11 +59,23 @@ function Navbar() {
           ))}
         </ul>
 
-        {/* Additional CTA Button */}
+        {/* Login/Logout Button */}
         <div className="hidden md:flex">
-          <button className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30">
-            Order Now
-          </button>
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={handleLogin}
+              className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
+            >
+              Login
+            </button>
+          )}
         </div>
 
         {/* Hamburger (mobile) - Enhanced */}
@@ -118,9 +142,21 @@ function Navbar() {
         ))}
 
         {/* Mobile CTA Button */}
-        <button className="mt-8 px-6 py-3 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg border border-amber-300/30">
-          Order Now
-        </button>
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            onClick={handleLogin}
+            className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
+          >
+            Login
+          </button>
+        )}
 
         {/* Contact info in mobile drawer */}
         <div className="mt-auto mb-8 p-4 bg-amber-800/50 rounded-xl border border-amber-500/20">
