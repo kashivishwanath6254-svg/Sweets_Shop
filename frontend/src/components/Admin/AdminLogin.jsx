@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AdminContext } from "../../utils/AuthContext";
 
 function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const navigate = useNavigate();
+  const { setIsAdmin } = useContext(AdminContext);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -16,6 +18,7 @@ function AdminLogin() {
 
     if (email === authEmail && password === authPassword) {
       setError(null);
+      setIsAdmin(true);
       navigate("/admin");
 
       localStorage.removeItem("isAdmin");

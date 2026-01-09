@@ -1,23 +1,31 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { isAdminAuthenticated } from "../utils/auth.js";
+import { useContext, useState } from "react";
+import { AdminContext } from "../utils/AuthContext";
 
 function Navbar() {
-  const isLoggedIn = isAdminAuthenticated();
+  const { isAdmin, onLogout } = useContext(AdminContext);
   const navigate = useNavigate();
+
   const handleLogin = () => {
     navigate("/admin/login");
   };
+
   const handleLogout = () => {
-    localStorage.removeItem("isAdmin");
-    sessionStorage.removeItem("isAdmin");
+    onLogout();
     navigate("/admin/login");
   };
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const links = ["/", "/products", "/about", "/contact", "/admin"];
-  const labels = ["Home", "Products", "About Us", "Contact Us", "Admin"];
+  // const links = ["/", "/products", "/about", "/contact", "/admin"];
+  // const labels = ["Home", "Products", "About Us", "Contact Us", "Admin"];
+  const links = [
+    { path: "/", label: "Home" },
+    { path: "/products", label: "Products" },
+    { path: "/about", label: "About Us" },
+    { path: "/contact", label: "Contact Us" },
+    ...(isAdmin ? [{ path: "/admin", label: "Admin" }] : []),
+  ];
 
   return (
     <nav className="bg-linear-to-r from-amber-900 to-amber-800 shadow-2xl sticky top-0 w-full z-50 border-b border-amber-500/30">
@@ -39,7 +47,7 @@ function Navbar() {
           {links.map((path, index) => (
             <li key={index}>
               <NavLink
-                to={path}
+                to={path.path}
                 className={({ isActive }) =>
                   `relative transition-all duration-500 pb-2 font-medium
                   ${
@@ -53,7 +61,7 @@ function Navbar() {
                   ${isActive ? "after:scale-x-100" : "hover:after:scale-x-100"}`
                 }
               >
-                {labels[index]}
+                {path.label}
               </NavLink>
             </li>
           ))}
@@ -61,7 +69,7 @@ function Navbar() {
 
         {/* Login/Logout Button */}
         <div className="hidden md:flex">
-          {isLoggedIn ? (
+          {isAdmin ? (
             <button
               onClick={handleLogout}
               className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
@@ -126,7 +134,7 @@ function Navbar() {
         {links.map((path, index) => (
           <NavLink
             key={index}
-            to={path}
+            to={path.path}
             onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `text-amber-100 text-xl font-medium tracking-wide transition-all duration-300 py-3 px-4 rounded-xl
@@ -137,12 +145,12 @@ function Navbar() {
               }`
             }
           >
-            {labels[index]}
+            {path.label}
           </NavLink>
         ))}
 
         {/* Mobile CTA Button */}
-        {isLoggedIn ? (
+        {isAdmin ? (
           <button
             onClick={handleLogout}
             className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"

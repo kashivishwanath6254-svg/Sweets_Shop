@@ -1,8 +1,10 @@
 import { Navigate } from "react-router-dom";
-import { isAdminAuthenticated } from "../../utils/auth.js";
+import { useContext } from "react";
+import { AdminContext } from "../../utils/AuthContext.jsx";
 
 function ProtectedAdminRoute({ children }) {
-  if (isAdminAuthenticated() !== true) {
+  const { isAdmin } = useContext(AdminContext);
+  if (!isAdmin) {
     return <Navigate to={"/admin/login"} replace />;
   }
   return children;
