@@ -3,7 +3,7 @@ import { useEffect } from "react";
 // import products from "../json/products.json";
 
 function Products() {
-  const [products, setProducts] = useState({ categories: [] } );
+  const [products, setProducts] = useState({ categories: [] });
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -44,7 +44,7 @@ function Products() {
                 key={item.id}
                 className="p-6 rounded-2xl bg-white shadow-lg
                        hover:shadow-2xl hover:shadow-amber-200/50
-                       hover:scale-[1.02] transition-all duration-300 cursor-pointer border border-amber-200"
+                       hover:scale-[1.02] transition-all duration-300 border border-amber-200 flex flex-col h-full"
               >
                 <div className="h-48 bg-linear-to-br from-amber-100 to-amber-50 rounded-xl mb-5 flex items-center justify-center border border-amber-200">
                   <img
@@ -83,8 +83,8 @@ function Products() {
                 </span>
 
                 <button
-                  className="mt-5 w-full py-3 rounded-xl bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold
-                               hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-md hover:shadow-lg"
+                  className="mt-auto w-full py-3 rounded-xl bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold
+                               hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
                 >
                   Add to Cart
                   <span className="material-symbols-outlined">
