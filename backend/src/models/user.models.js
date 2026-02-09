@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    profileName: {
       type: String,
-      required: true,
-      lowercase: true,
       trim: true,
-      index: true,
     },
     email: {
       type: String,
