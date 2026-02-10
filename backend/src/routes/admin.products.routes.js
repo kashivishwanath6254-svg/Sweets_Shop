@@ -8,20 +8,29 @@ import {
 import {
   validateProduct,
   validateProductId,
-} from "../middlewares/validation.js";
+} from "../middlewares/validation.middleware.js";
+import { protect } from "../middlewares/auth.middleware.js";
+import { adminOnly } from "../middlewares/admin.middleware.js";
 
 const router = express.Router();
 
 //GET: Fetch all products
-router.get("/", getAllProducts);
+router.get("/", protect, adminOnly, getAllProducts);
 
 //POST: Add new products
-router.post("/", validateProduct, createProduct);
+router.post("/", protect, adminOnly, validateProduct, createProduct);
 
 //PUT: Edit a product
-router.put("/:id", validateProductId, validateProduct, updateProduct);
+router.put(
+  "/:id",
+  protect,
+  adminOnly,
+  validateProductId,
+  validateProduct,
+  updateProduct
+);
 
 //DELETE: Remove a product
-router.delete("/:id", validateProductId, deleteProduct);
+router.delete("/:id", protect, adminOnly, validateProductId, deleteProduct);
 
 export default router;
