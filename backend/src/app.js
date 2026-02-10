@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { errorHandler } from "./middlewares/errorHandler.js";
 import productsRouter from "./routes/products.routes.js";
 import adminProductsRouter from "./routes/admin.products.routes.js";
 
@@ -16,5 +17,8 @@ app.use("/api/admin/products", adminProductsRouter);
 app.get("/", (req, res) => {
   res.send("Server working");
 });
+
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 export default app;
