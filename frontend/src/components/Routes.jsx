@@ -36,8 +36,8 @@ const router = createBrowserRouter(
           </ProtectedLoginRoute>
         }
       />
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;

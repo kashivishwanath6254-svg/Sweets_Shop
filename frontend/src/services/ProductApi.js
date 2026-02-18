@@ -1,23 +1,42 @@
 // src/services/ProductApi.js
 import { BASE_URL } from "../constants/constants.js";
 
+// Helper function to get auth token
+const getAuthToken = () => {
+  return localStorage.getItem("token") || sessionStorage.getItem("token");
+};
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = getAuthToken();
+  const headers = { "Content-Type": "application/json" };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return headers;
+};
+
 export const ProductApi = {
   getProducts: async () => {
-    const response = await fetch(BASE_URL); //fetch the info from the admin routes in backend
+    //Get all products
+    const response = await fetch(BASE_URL, {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) {
-      throw new Error("Failed to fetch products!"); //Throw stops execution and signals an exception
+      throw new Error("Failed to fetch products");
     }
-    const data = await response.json(); //convert the fetched info to useable js object
-    return data; //return the object
+    const data = await response.json();
+    return data;
   },
 
   addProduct: async (product) => {
-    //product is an js object containing info about the product to be added
+    //Add a new product
     const response = await fetch(BASE_URL, {
-      //fetch the info
-      method: "POST", //tell what to do with the info
-      headers: { "Content-type": "application/json" }, //what type of info we will be dealing with
-      body: JSON.stringify(product), //convert the info to json
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(product),
     });
     if (!response.ok) {
       throw new Error("Failed to add product");
@@ -27,10 +46,10 @@ export const ProductApi = {
   },
 
   updateProduct: async (id, updates) => {
-    //id contains the id of product to be updated and updates contain the info to be updated
+    //Update a product
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
-      headers: { "Content-type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates),
     });
     if (!response.ok) {
@@ -41,9 +60,10 @@ export const ProductApi = {
   },
 
   deleteProduct: async (id) => {
+    //Delete a product
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
-      headers: { "Content-type": "application/json" },
+      headers: getAuthHeaders(),
     });
     if (!response.ok) {
       throw new Error("Failed to delete product");

@@ -1,6 +1,8 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminContext } from "../../utils/AuthContext";
+import { AuthApi } from "../../services/AuthApi";
+import { decodeJWT } from "../../utils/jwtUtils";
 
 function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -8,30 +10,38 @@ function AdminLogin() {
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { setIsAdmin } = useContext(AdminContext);
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
-    const authEmail = "admin@sweetshop.com";
-    const authPassword = "admin123";
+    setIsLoading(true);
+    setError(null);
 
-    if (email === authEmail && password === authPassword) {
-      setError(null);
-      setIsAdmin(true);
-      navigate("/admin");
+    try {
+      const response = await AuthApi.login(email, password);
 
-      localStorage.removeItem("isAdmin");
-      sessionStorage.removeItem("isAdmin");
+      // Decode JWT to get role
+      const decodedToken = decodeJWT(response.token);
+      const userRole = decodedToken?.role;
 
-      if (remember) {
-        localStorage.setItem("isAdmin", "true");
+      // Store unified token
+      const storage = remember ? localStorage : sessionStorage;
+      storage.setItem("token", response.token);
+
+      // Handle role-based routing
+      if (userRole === "admin") {
+        storage.setItem("isAdmin", "true");
+        setIsAdmin(true);
+        navigate("/admin");
       } else {
-        sessionStorage.setItem("isAdmin", "true");
+        setError("Access denied. Admin privileges required.");
       }
-    } else {
-      console.error("Invalid user!!!");
-      setError("Invalid Credentials");
+    } catch (error) {
+      setError(error.message || "Invalid credentials");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -141,29 +151,19 @@ function AdminLogin() {
             )}
             <button
               type="submit"
-              className="w-full py-4 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+              disabled={isLoading}
+              className="w-full py-4 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign In to Admin Panel
+              {isLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Signing In...
+                </>
+              ) : (
+                <>Sign In to Admin Panel</>
+              )}
             </button>
           </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-8 p-4 bg-amber-50 rounded-xl border border-amber-200">
-            <p className="text-sm font-medium text-amber-700 mb-2">
-              Demo Credentials:
-            </p>
-            <div className="space-y-1 text-sm">
-              <p className="text-amber-600">
-                📧 Email: <span className="font-mono">admin@sweetshop.com</span>
-              </p>
-              <p className="text-amber-600">
-                🔑 Password: <span className="font-mono">admin123</span>
-              </p>
-            </div>
-            <p className="text-xs text-amber-500 mt-3">
-              ⚠️ In production, use secure authentication methods
-            </p>
-          </div>
         </div>
 
         {/* Footer */}

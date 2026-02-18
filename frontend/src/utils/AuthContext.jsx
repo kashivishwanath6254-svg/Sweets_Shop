@@ -9,6 +9,8 @@ function AdminProvider({ children }) {
   const onLogout = () => {
     localStorage.removeItem("isAdmin");
     sessionStorage.removeItem("isAdmin");
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     setIsAdmin(false);
   };
 
