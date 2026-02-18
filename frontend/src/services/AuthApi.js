@@ -1,5 +1,7 @@
 // src/services/AuthApi.js
-const BASE_URL = "http://localhost:3000/api/users";
+import { API_ENDPOINTS } from "../config/api.js";
+
+const BASE_URL = API_ENDPOINTS.USERS;
 
 export const AuthApi = {
   login: async (email, password) => {
