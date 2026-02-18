@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
+import API_BASE_URL from "../config/api.js";
 // import products from "../json/products.json";
 
 function Products() {
@@ -7,7 +8,7 @@ function Products() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/products");
+        const response = await fetch(`${API_BASE_URL}/api/products`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -101,3 +102,4 @@ function Products() {
 }
 
 export default Products;
+
