@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { AdminContext } from "../../utils/AuthContext";
+import { AuthContext } from "../../utils/AuthContext";
 
 function ProtectedLoginRoute({ children }) {
-  const { isAdmin } = useContext(AdminContext);
-  if (isAdmin) {
+  const { user } = useContext(AuthContext);
+  if (user && user.role === "admin") {
     return <Navigate to={"/admin"} replace />;
   }
   return children;

@@ -10,6 +10,7 @@ export const AuthApi = {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -28,12 +29,43 @@ export const AuthApi = {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify({ email, password, profileName }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Registration failed");
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
+  logout: async () => {
+    const response = await fetch(`${BASE_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Logout failed");
+    }
+
+    const data = await response.json();
+    return data;
+  },
+
+  getMe: async () => {
+    const response = await fetch(`${BASE_URL}/me`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to fetch user");
     }
 
     const data = await response.json();

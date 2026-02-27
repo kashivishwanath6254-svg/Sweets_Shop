@@ -1,30 +1,32 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-import { AdminContext } from "../utils/AuthContext";
+import { AuthContext } from "../utils/AuthContext";
 
 function Navbar() {
-  const { isAdmin, onLogout } = useContext(AdminContext);
+  const { user, logout, isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
+  const isAdmin = user?.role === "admin";
+  const isCustomer = user?.role === "user";
 
   const handleLogin = () => {
-    navigate("/admin/login");
+    navigate("/login");
   };
 
-  const handleLogout = () => {
-    onLogout();
-    navigate("/admin/login");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // const links = ["/", "/products", "/about", "/contact", "/admin"];
-  // const labels = ["Home", "Products", "About Us", "Contact Us", "Admin"];
   const links = [
     { path: "/", label: "Home" },
     { path: "/products", label: "Products" },
     { path: "/about", label: "About Us" },
     { path: "/contact", label: "Contact Us" },
+
     ...(isAdmin ? [{ path: "/admin", label: "Admin" }] : []),
+    ...(isCustomer ? [{ path: "/profile", label: "Profile" }] : []),
   ];
 
   return (
@@ -69,7 +71,7 @@ function Navbar() {
 
         {/* Login/Logout Button */}
         <div className="hidden md:flex">
-          {isAdmin ? (
+          {isAuthenticated ? (
             <button
               onClick={handleLogout}
               className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
@@ -150,7 +152,7 @@ function Navbar() {
         ))}
 
         {/* Mobile CTA Button */}
-        {isAdmin ? (
+        {isAuthenticated ? (
           <button
             onClick={handleLogout}
             className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"

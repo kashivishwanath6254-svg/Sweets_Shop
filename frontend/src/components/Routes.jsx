@@ -9,9 +9,10 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import Products from "../pages/Products";
 import AdminPanel from "../pages/AdminPanel";
-import AdminLogin from "./Admin/AdminLogin";
+import LoginPage from "./Admin/LoginPage";
 import ProtectedAdminRoute from "./Admin/ProtectedAdminRoute";
 import ProtectedLoginRoute from "./Admin/ProtectedLoginRoute";
+import ProfilePage from "../pages/ProfilePage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,6 +21,7 @@ const router = createBrowserRouter(
       <Route path="about" element={<About />} />
       <Route path="contact" element={<Contact />} />
       <Route path="products" element={<Products />} />
+      <Route path="profile" element={<ProfilePage />} />
       <Route
         path="admin"
         element={
@@ -29,10 +31,10 @@ const router = createBrowserRouter(
         }
       />
       <Route
-        path="admin/login"
+        path="/login"
         element={
           <ProtectedLoginRoute>
-            <AdminLogin />
+            <LoginPage />
           </ProtectedLoginRoute>
         }
       />

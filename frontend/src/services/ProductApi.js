@@ -1,28 +1,14 @@
 // src/services/ProductApi.js
 import { BASE_URL } from "../constants/constants.js";
 
-// Helper function to get auth token
-const getAuthToken = () => {
-  return localStorage.getItem("token") || sessionStorage.getItem("token");
-};
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = getAuthToken();
-  const headers = { "Content-Type": "application/json" };
-
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  return headers;
-};
 
 export const ProductApi = {
   getProducts: async () => {
     //Get all products
     const response = await fetch(BASE_URL, {
-      headers: getAuthHeaders(),
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error("Failed to fetch products");
@@ -35,8 +21,9 @@ export const ProductApi = {
     //Add a new product
     const response = await fetch(BASE_URL, {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(product),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error("Failed to add product");
@@ -49,8 +36,9 @@ export const ProductApi = {
     //Update a product
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
-      headers: getAuthHeaders(),
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify(updates),
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error("Failed to update product");
@@ -63,7 +51,8 @@ export const ProductApi = {
     //Delete a product
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
+      headers: {"Content-Type": "application/json"},
+      credentials: "include",
     });
     if (!response.ok) {
       throw new Error("Failed to delete product");

@@ -1,10 +1,8 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AdminContext } from "../../utils/AuthContext";
-import { AuthApi } from "../../services/AuthApi";
-import { decodeJWT } from "../../utils/jwtUtils";
+import { AuthContext } from "../../utils/AuthContext";
 
-function AdminLogin() {
+function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -12,7 +10,14 @@ function AdminLogin() {
   const [remember, setRemember] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setIsAdmin } = useContext(AdminContext);
+  const { login } = useContext(AuthContext);
+
+  // Function to fill demo credentials
+  const fillDemoCredentials = () => {
+    setEmail("admin@sweets.com");
+    setPassword("admin123");
+    setError(null);
+  };
 
   const submitHandler = async (event) => {
     event.preventDefault();
@@ -20,23 +25,16 @@ function AdminLogin() {
     setError(null);
 
     try {
-      const response = await AuthApi.login(email, password);
-
-      // Decode JWT to get role
-      const decodedToken = decodeJWT(response.token);
-      const userRole = decodedToken?.role;
-
-      // Store unified token
-      const storage = remember ? localStorage : sessionStorage;
-      storage.setItem("token", response.token);
+      const user = await login(email, password);
 
       // Handle role-based routing
-      if (userRole === "admin") {
-        storage.setItem("isAdmin", "true");
-        setIsAdmin(true);
-        navigate("/admin");
-      } else {
-        setError("Access denied. Admin privileges required.");
+      switch (user.role) {
+        case "admin":
+          navigate("/admin");
+          break;
+        case "user":
+          navigate("/profile");
+          break;
       }
     } catch (error) {
       setError(error.message || "Invalid credentials");
@@ -85,7 +83,7 @@ function AdminLogin() {
                 <input
                   type="email"
                   className="w-full pl-12 pr-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
-                  placeholder="admin@sweetshop.com"
+                  placeholder="admin@sweets.com"
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);
@@ -164,6 +162,57 @@ function AdminLogin() {
               )}
             </button>
           </form>
+
+          {/* Demo Credentials Section - Added Here */}
+          <div className="mt-8 p-5 bg-linear-to-br from-amber-50 to-amber-100/50 rounded-xl border border-amber-300/30 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 bg-amber-200 rounded-full flex items-center justify-center">
+                <span className="text-amber-700">🔐</span>
+              </div>
+              <p className="text-sm font-semibold text-amber-800">
+                Demo Credentials
+              </p>
+            </div>
+            <div className="space-y-2.5 pl-11">
+              <div className="flex items-center gap-2">
+                <span className="text-amber-600">📧</span>
+                <div>
+                  <p className="text-xs text-amber-500">Email</p>
+                  <p className="text-sm font-mono text-amber-700">
+                    admin@sweets.com
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-amber-600">🔑</span>
+                <div>
+                  <p className="text-xs text-amber-500">Password</p>
+                  <p className="text-sm font-mono text-amber-700">admin123</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Auto-fill button */}
+            <div className="mt-4 pt-3 border-t border-amber-300/30">
+              <button
+                type="button"
+                onClick={fillDemoCredentials}
+                className="w-full py-2 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors flex items-center justify-center gap-2 group"
+              >
+                <span className="group-hover:scale-110 transition-transform">
+                  ⚡
+                </span>
+                Click to auto-fill demo credentials
+                <span className="group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </button>
+              <p className="text-xs text-amber-500/80 text-center mt-3">
+                ⚠️ For demonstration only. Use secure authentication in
+                production.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
@@ -187,4 +236,4 @@ function AdminLogin() {
   );
 }
 
-export default AdminLogin;
+export default LoginPage;

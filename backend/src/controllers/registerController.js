@@ -70,15 +70,35 @@ export const loginUser = async (req, res, next) => {
       { expiresIn: "1h" }
     );
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      maxAge: 60 * 60 * 1000,
+    });
+
     res.status(200).json({
       message: "Login successful",
       id: user._id,
       email: user.email,
       profileName: user.profileName,
       role: user.role,
-      token,
     });
   } catch (error) {
     next(error);
   }
+};
+
+export const logoutUser = (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
+
+  res.status(200).json({ message: "Logged out successfully" });
+};
+
+export const getCurrentUser = (req, res) => {
+  res.status(200).json(req.user);
 };
