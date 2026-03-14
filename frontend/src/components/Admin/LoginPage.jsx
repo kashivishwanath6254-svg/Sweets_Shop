@@ -5,12 +5,14 @@ import { AuthContext } from "../../utils/AuthContext";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [profileName, setProfileName] = useState("");
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login, register } = useContext(AuthContext);
 
   // Function to fill demo credentials
   const fillDemoCredentials = () => {
@@ -25,22 +27,40 @@ function LoginPage() {
     setError(null);
 
     try {
-      const user = await login(email, password);
+      let user;
+      if (isRegisterMode) {
+        // Registration logic
+        user = await register(email, password, profileName);
+        // After successful registration, redirect to profile page
+        navigate("/profile");
+      } else {
+        // Login logic
+        user = await login(email, password);
 
-      // Handle role-based routing
-      switch (user.role) {
-        case "admin":
-          navigate("/admin");
-          break;
-        case "user":
-          navigate("/profile");
-          break;
+        // Handle role-based routing
+        switch (user.role) {
+          case "admin":
+            navigate("/admin");
+            break;
+          case "user":
+            navigate("/profile");
+            break;
+        }
       }
     } catch (error) {
-      setError(error.message || "Invalid credentials");
+      setError(
+        error.message ||
+          (isRegisterMode ? "Registration failed" : "Invalid credentials"),
+      );
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleMode = () => {
+    setIsRegisterMode(!isRegisterMode);
+    setError(null);
+    setProfileName("");
   };
 
   const homePage = () => {
@@ -63,9 +83,11 @@ function LoginPage() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
-            SweetShop Admin
+            {isRegisterMode ? "Join SweetShop" : "Welcome to SweetShop"}
           </h1>
-          <p className="text-amber-100">Secure Admin Access</p>
+          <p className="text-amber-100">
+            {isRegisterMode ? "Create your account" : "Sign in to your account"}
+          </p>
         </div>
 
         {/* Login Form */}
@@ -74,7 +96,7 @@ function LoginPage() {
             {/* Email Input */}
             <div>
               <label className="block text-sm font-medium text-amber-700 mb-2">
-                Admin Email
+                Email Address
               </label>
               <div className="relative">
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-400">
@@ -83,7 +105,7 @@ function LoginPage() {
                 <input
                   type="email"
                   className="w-full pl-12 pr-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
-                  placeholder="admin@sweets.com"
+                  placeholder="your@email.com"
                   value={email}
                   onChange={(event) => {
                     setEmail(event.target.value);
@@ -92,6 +114,30 @@ function LoginPage() {
                 />
               </div>
             </div>
+
+            {/* Profile Name Input - Only shown in registration mode */}
+            {isRegisterMode && (
+              <div>
+                <label className="block text-sm font-medium text-amber-700 mb-2">
+                  Profile Name
+                </label>
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-amber-400">
+                    👤
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full pl-12 pr-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
+                    placeholder="Your name"
+                    value={profileName}
+                    onChange={(event) => {
+                      setProfileName(event.target.value);
+                      setError(null);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Password Input */}
             <div>
@@ -155,71 +201,82 @@ function LoginPage() {
               {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Signing In...
+                  {isRegisterMode ? "Creating Account..." : "Signing In..."}
                 </>
               ) : (
-                <>Sign In to Admin Panel</>
+                <>{isRegisterMode ? "Create Account" : "Sign In"}</>
               )}
             </button>
           </form>
 
-          {/* Demo Credentials Section - Added Here */}
-          <div className="mt-8 p-5 bg-linear-to-br from-amber-50 to-amber-100/50 rounded-xl border border-amber-300/30 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 bg-amber-200 rounded-full flex items-center justify-center">
-                <span className="text-amber-700">🔐</span>
+          {/* Demo Credentials Section - Only shown in login mode */}
+          {!isRegisterMode && (
+            <div className="mt-8 p-5 bg-linear-to-br from-amber-50 to-amber-100/50 rounded-xl border border-amber-300/30 shadow-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 bg-amber-200 rounded-full flex items-center justify-center">
+                  <span className="text-amber-700">🔐</span>
+                </div>
+                <p className="text-sm font-semibold text-amber-800">
+                  Demo Admin Credentials
+                </p>
               </div>
-              <p className="text-sm font-semibold text-amber-800">
-                Demo Credentials
-              </p>
-            </div>
-            <div className="space-y-2.5 pl-11">
-              <div className="flex items-center gap-2">
-                <span className="text-amber-600">📧</span>
-                <div>
-                  <p className="text-xs text-amber-500">Email</p>
-                  <p className="text-sm font-mono text-amber-700">
-                    admin@sweets.com
-                  </p>
+              <div className="space-y-2.5 pl-11">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-600">📧</span>
+                  <div>
+                    <p className="text-xs text-amber-500">Email</p>
+                    <p className="text-sm font-mono text-amber-700">
+                      admin@sweets.com
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-600">🔑</span>
+                  <div>
+                    <p className="text-xs text-amber-500">Password</p>
+                    <p className="text-sm font-mono text-amber-700">admin123</p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-amber-600">🔑</span>
-                <div>
-                  <p className="text-xs text-amber-500">Password</p>
-                  <p className="text-sm font-mono text-amber-700">admin123</p>
-                </div>
-              </div>
-            </div>
 
-            {/* Auto-fill button */}
-            <div className="mt-4 pt-3 border-t border-amber-300/30">
-              <button
-                type="button"
-                onClick={fillDemoCredentials}
-                className="w-full py-2 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors flex items-center justify-center gap-2 group"
-              >
-                <span className="group-hover:scale-110 transition-transform">
-                  ⚡
-                </span>
-                Click to auto-fill demo credentials
-                <span className="group-hover:translate-x-1 transition-transform">
-                  →
-                </span>
-              </button>
-              <p className="text-xs text-amber-500/80 text-center mt-3">
-                ⚠️ For demonstration only. Use secure authentication in
-                production.
-              </p>
+              {/* Auto-fill button */}
+              <div className="mt-4 pt-3 border-t border-amber-300/30">
+                <button
+                  type="button"
+                  onClick={fillDemoCredentials}
+                  className="w-full py-2 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors flex items-center justify-center gap-2 group"
+                >
+                  <span className="group-hover:scale-110 transition-transform">
+                    ⚡
+                  </span>
+                  Click to auto-fill demo credentials
+                  <span className="group-hover:translate-x-1 transition-transform">
+                    →
+                  </span>
+                </button>
+                <p className="text-xs text-amber-500/80 text-center mt-3">
+                  ⚠️ For demonstration only. Use secure authentication in
+                  production.
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Footer */}
         <div className="border-t border-amber-200 p-4 text-center">
-          <p className="text-sm text-amber-500">
-            For authorized personnel only. Unauthorized access prohibited.
-          </p>
+          {/* Toggle between login and register */}
+          <div className="mb-3">
+            <button
+              type="button"
+              onClick={toggleMode}
+              className="text-amber-600 hover:text-amber-700 transition font-medium"
+            >
+              {isRegisterMode
+                ? "Already have an account? Sign In"
+                : "New User? Register Now"}
+            </button>
+          </div>
         </div>
       </div>
 
