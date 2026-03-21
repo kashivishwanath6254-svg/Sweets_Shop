@@ -4,7 +4,7 @@ import {
   loginUser,
   logoutUser,
   getCurrentUser,
-} from "../controllers/registerController.js";
+} from "../controllers/authController.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
