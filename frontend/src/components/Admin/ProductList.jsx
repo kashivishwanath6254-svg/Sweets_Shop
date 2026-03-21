@@ -73,6 +73,9 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                 Category
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
+                Stock
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
                 Image
               </th>
               <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">
@@ -118,11 +121,40 @@ function ProductList({ products, loading, onEdit, onDelete }) {
                 <td className="px-6 py-4">
                   <span
                     className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-full bg-linear-to-r ${getCategoryColor(
-                      product.category
+                      product.category,
                     )} text-white shadow-sm`}
                   >
                     {product.category || "Traditional"}
                   </span>
+                </td>
+
+                <td className="px-6 py-4">
+                  <div
+                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${
+                      product.stock <= 10
+                        ? "bg-red-100 border border-red-200"
+                        : product.stock <= 25
+                          ? "bg-amber-100 border border-amber-200"
+                          : "bg-green-100 border border-green-200"
+                    }`}
+                  >
+                    <span
+                      className={`font-semibold ${
+                        product.stock <= 10
+                          ? "text-red-700"
+                          : product.stock <= 25
+                            ? "text-amber-700"
+                            : "text-green-700"
+                      }`}
+                    >
+                      {product.stock}
+                    </span>
+                    {product.stock <= 10 && (
+                      <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full font-semibold">
+                        Low Stock
+                      </span>
+                    )}
+                  </div>
                 </td>
 
                 <td className="px-6 py-4">
