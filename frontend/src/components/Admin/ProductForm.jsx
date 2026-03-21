@@ -13,6 +13,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
     image: initialData.image || "",
     description: initialData.description || "",
     stock: initialData.stock || 50,
+    isAvailable: initialData.isAvailable ?? true,
   });
 
   // Validation error messages for each field
@@ -57,11 +58,11 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
   // Update form state when user types
   // Also clears the error for that specific field
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     if (errors[name]) {
@@ -224,6 +225,25 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
                 <span>{errors.stock}</span>
               </div>
             )}
+          </div>
+
+          {/* Availability */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="isAvailable"
+                checked={formData.isAvailable}
+                onChange={handleChange}
+                className="w-5 h-5 text-amber-600 rounded focus:ring-amber-400 focus:ring-2"
+              />
+              <span className="text-sm font-semibold text-amber-800">
+                🟢 Product Available for Purchase
+              </span>
+            </label>
+            <p className="text-xs text-amber-500">
+              Uncheck to temporarily hide this product from customers
+            </p>
           </div>
 
           {/* Image URL */}
