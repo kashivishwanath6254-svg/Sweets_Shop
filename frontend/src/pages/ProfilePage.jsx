@@ -1,17 +1,55 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../utils/AuthContext";
 
 function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
+  const { user, loading } = useContext(AuthContext);
 
-  // Mock user data - In real app, this would come from your auth context/API
-  const userData = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    registrationDate: "January 15, 2024",
-    phone: "+91 98765 43210",
-  };
+  const [editedName, setEditedName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [newAddress, setNewAddress] = useState({
+    type: "Home",
+    address: "",
+    city: "",
+    pincode: "",
+  });
+
+  // Mock addresses data
+  const [addresses, setAddresses] = useState([
+    {
+      id: 1,
+      type: "Home",
+      address: "123 Sweet Street, Block A",
+      city: "Delhi",
+      pincode: "110001",
+      isDefault: true,
+    },
+    {
+      id: 2,
+      type: "Work",
+      address: "456 Business Plaza, Sector 18",
+      city: "Noida",
+      pincode: "201301",
+      isDefault: false,
+    },
+  ]);
+
+  if (loading || !user)
+    return <p className="text-center py-8 text-amber-600">Loading...</p>;
+
+  const registrationDate = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Not available";
 
   // Mock orders data
   const orders = [
@@ -37,39 +75,11 @@ function ProfilePage() {
       status: "Processing",
     },
   ];
-
-  // Mock addresses data
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      type: "Home",
-      address: "123 Sweet Street, Block A",
-      city: "Delhi",
-      pincode: "110001",
-      isDefault: true,
-    },
-    {
-      id: 2,
-      type: "Work",
-      address: "456 Business Plaza, Sector 18",
-      city: "Noida",
-      pincode: "201301",
-      isDefault: false,
-    },
-  ]);
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(userData.name);
-  const [editedEmail, setEditedEmail] = useState(userData.email);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
-  const [editingAddress, setEditingAddress] = useState(null);
-  const [newAddress, setNewAddress] = useState({
-    type: "Home",
-    address: "",
-    city: "",
-    pincode: "",
-  });
+  const handleEditClick = () => {
+    setEditedName(user?.profileName || "");
+    setEditedEmail(user?.email || "");
+    setIsEditing(true);
+  };
 
   const handleUpdateProfile = () => {
     // API call to update profile
@@ -184,11 +194,11 @@ function ProfilePage() {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-amber-800">
-                      {userData.name}
+                      {user?.profileName}
                     </h2>
-                    <p className="text-amber-600">{userData.email}</p>
+                    <p className="text-amber-600">{user?.email}</p>
                     <p className="text-sm text-amber-500 mt-1">
-                      Member since {userData.registrationDate}
+                      Member since {registrationDate}
                     </p>
                   </div>
                 </div>
@@ -224,7 +234,7 @@ function ProfilePage() {
                       </label>
                       <input
                         type="tel"
-                        value={userData.phone}
+                        value={user?.phone}
                         disabled
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl bg-amber-50/50 text-amber-500"
                       />
@@ -253,25 +263,25 @@ function ProfilePage() {
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                         <p className="text-sm text-amber-500">Full Name</p>
                         <p className="text-lg font-medium text-amber-800">
-                          {userData.name}
+                          {user?.profileName}
                         </p>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                         <p className="text-sm text-amber-500">Email Address</p>
                         <p className="text-lg font-medium text-amber-800">
-                          {userData.email}
+                          {user?.email}
                         </p>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                         <p className="text-sm text-amber-500">Phone Number</p>
                         <p className="text-lg font-medium text-amber-800">
-                          {userData.phone}
+                          {user?.phone || "Not added"}
                         </p>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                         <p className="text-sm text-amber-500">Member Since</p>
                         <p className="text-lg font-medium text-amber-800">
-                          {userData.registrationDate}
+                          {registrationDate}
                         </p>
                       </div>
                     </div>
@@ -283,7 +293,7 @@ function ProfilePage() {
                       </h3>
                       <div className="space-y-3">
                         <button
-                          onClick={() => setIsEditing(true)}
+                          onClick={handleEditClick}
                           className="w-full p-4 text-left bg-white hover:bg-amber-50 border border-amber-200 rounded-xl transition-all duration-300 flex items-center justify-between group"
                         >
                           <div className="flex items-center gap-3">

@@ -38,7 +38,7 @@ function LoginPage() {
         user = await login(email, password);
 
         // Handle role-based routing
-        switch (user.role) {
+        switch (user.user.role) {
           case "admin":
             navigate("/admin");
             break;

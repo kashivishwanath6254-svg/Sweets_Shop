@@ -29,10 +29,15 @@ export const registerUser = async (req, res, next) => {
 
     res.status(201).json({
       message: "User created successfully",
-      id: user._id,
-      email: user.email,
-      profileName: user.profileName,
-      role: user.role,
+      user: {
+        _id: user._id,
+        profileName: user.profileName,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -79,10 +84,15 @@ export const loginUser = async (req, res, next) => {
 
     res.status(200).json({
       message: "Login successful",
-      id: user._id,
-      email: user.email,
-      profileName: user.profileName,
-      role: user.role,
+      user: {
+        _id: user._id,
+        profileName: user.profileName,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     next(error);
