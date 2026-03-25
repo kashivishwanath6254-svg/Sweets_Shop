@@ -1,14 +1,14 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../utils/AuthContext";
+import { AuthApi } from "../services/AuthApi";
 
 function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
   const navigate = useNavigate();
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, setUser } = useContext(AuthContext);
 
   const [editedName, setEditedName] = useState("");
-  const [editedEmail, setEditedEmail] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -75,16 +75,23 @@ function ProfilePage() {
       status: "Processing",
     },
   ];
+
   const handleEditClick = () => {
     setEditedName(user?.profileName || "");
-    setEditedEmail(user?.email || "");
     setIsEditing(true);
   };
 
-  const handleUpdateProfile = () => {
-    // API call to update profile
-    console.log("Updating profile:", { name: editedName, email: editedEmail });
-    setIsEditing(false);
+  const handleUpdateProfile = async () => {
+    try {
+      // API call to update profile
+      const updatedUser = await AuthApi.updateProfile({
+        profileName: editedName,
+      });
+      setUser(updatedUser);
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating the user:", error);
+    }
   };
 
   const handleChangePassword = () => {
@@ -203,7 +210,7 @@ function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Edit Profile Form */}
+                {/* Edit Profile Form - Only Name is Editable */}
                 {isEditing ? (
                   <div className="space-y-4">
                     <div>
@@ -217,31 +224,50 @@ function ProfilePage() {
                         className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent"
                       />
                     </div>
+
+                    {/* Email Field - Read Only with Coming Soon Badge */}
                     <div>
                       <label className="block text-sm font-medium text-amber-700 mb-2">
                         Email Address
                       </label>
-                      <input
-                        type="email"
-                        value={editedEmail}
-                        onChange={(e) => setEditedEmail(e.target.value)}
-                        className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-                      />
+                      <div className="relative">
+                        <input
+                          type="email"
+                          value={user?.email || ""}
+                          disabled
+                          className="w-full px-4 py-3 border border-amber-200 rounded-xl bg-amber-50/50 text-amber-500 cursor-not-allowed"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs bg-amber-100 text-amber-600 px-2 py-1 rounded-full">
+                          Coming Soon
+                        </span>
+                      </div>
+                      <p className="text-xs text-amber-500 mt-1">
+                        Email editing will be available soon
+                      </p>
                     </div>
+
+                    {/* Phone Field - Read Only with Coming Soon Badge */}
                     <div>
                       <label className="block text-sm font-medium text-amber-700 mb-2">
                         Phone Number
                       </label>
-                      <input
-                        type="tel"
-                        value={user?.phone}
-                        disabled
-                        className="w-full px-4 py-3 border border-amber-200 rounded-xl bg-amber-50/50 text-amber-500"
-                      />
+                      <div className="relative">
+                        <input
+                          type="tel"
+                          value={user?.phone || "Not added"}
+                          disabled
+                          className="w-full px-4 py-3 border border-amber-200 rounded-xl bg-amber-50/50 text-amber-500 cursor-not-allowed"
+                        />
+                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs bg-amber-100 text-amber-600 px-2 py-1 rounded-full">
+                          Coming Soon
+                        </span>
+                      </div>
                       <p className="text-xs text-amber-500 mt-1">
-                        Contact support to update phone number
+                        Phone number editing will be available soon with OTP
+                        verification
                       </p>
                     </div>
+
                     <div className="flex gap-4 pt-4">
                       <button
                         onClick={handleUpdateProfile}
@@ -267,16 +293,28 @@ function ProfilePage() {
                         </p>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
-                        <p className="text-sm text-amber-500">Email Address</p>
-                        <p className="text-lg font-medium text-amber-800">
-                          {user?.email}
-                        </p>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="text-sm text-amber-500">
+                              Email Address
+                            </p>
+                            <p className="text-lg font-medium text-amber-800">
+                              {user?.email}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
-                        <p className="text-sm text-amber-500">Phone Number</p>
-                        <p className="text-lg font-medium text-amber-800">
-                          {user?.phone || "Not added"}
-                        </p>
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="text-sm text-amber-500">
+                              Phone Number
+                            </p>
+                            <p className="text-lg font-medium text-amber-800">
+                              {user?.phone || "Not added"}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
                         <p className="text-sm text-amber-500">Member Since</p>
@@ -303,7 +341,7 @@ function ProfilePage() {
                                 Edit Profile
                               </p>
                               <p className="text-sm text-amber-500">
-                                Update your name or email address
+                                Update Profile
                               </p>
                             </div>
                           </div>

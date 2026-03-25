@@ -71,4 +71,22 @@ export const AuthApi = {
     const data = await response.json();
     return data;
   },
+
+  updateProfile: async (updatedData) => {
+    const response = await fetch(`${BASE_URL}/updateProfile`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Update failed");
+    }
+
+    return await response.json();
+  },
 };
