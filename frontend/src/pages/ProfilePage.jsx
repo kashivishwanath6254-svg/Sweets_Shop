@@ -19,6 +19,17 @@ function ProfilePage() {
     city: "",
     pincode: "",
   });
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Mock addresses data
   const [addresses, setAddresses] = useState([
@@ -83,10 +94,15 @@ function ProfilePage() {
 
   const handleUpdateProfile = async () => {
     try {
-      // API call to update profile
+      if (editedName === user.profileName) {
+        setIsEditing(false);
+        return; // no unnecessary API call
+      }
+
       const updatedUser = await AuthApi.updateProfile({
         profileName: editedName,
       });
+
       setUser(updatedUser);
       setIsEditing(false);
     } catch (error) {
@@ -95,8 +111,51 @@ function ProfilePage() {
   };
 
   const handleChangePassword = () => {
-    // Navigate to change password page or open modal
-    alert("Change password functionality - Implement your own!");
+    setPasswordData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setPasswordError("");
+    setShowPasswordForm(true);
+  };
+
+  const handlePasswordSubmit = async () => {
+    // Validation
+    if (!passwordData.currentPassword) {
+      setPasswordError("Please enter your current password");
+      return;
+    }
+    if (!passwordData.newPassword) {
+      setPasswordError("Please enter a new password");
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError("New password must be at least 6 characters");
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("New passwords do not match");
+      return;
+    }
+
+    setIsSubmittingPassword(true);
+    setPasswordError("");
+
+    try {
+      await AuthApi.changePassword(
+        passwordData.currentPassword,
+        passwordData.newPassword,
+      );
+
+      alert("Password changed successfully! Please login again.");
+      setUser(null);
+      navigate("/login");
+    } catch (error) {
+      setPasswordError(error.message || "Failed to change password");
+    } finally {
+      setIsSubmittingPassword(false);
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -389,6 +448,166 @@ function ProfilePage() {
                             →
                           </span>
                         </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Change Password Modal */}
+                {showPasswordForm && (
+                  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-2xl font-bold text-amber-800">
+                          Change Password
+                        </h3>
+                        <button
+                          onClick={() => setShowPasswordForm(false)}
+                          className="text-amber-400 hover:text-amber-600 transition text-2xl"
+                        >
+                          ×
+                        </button>
+                      </div>
+
+                      <p className="text-amber-600 text-sm mb-6">
+                        Please enter your current password and choose a new one
+                      </p>
+
+                      {/* Error Message */}
+                      {passwordError && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
+                          <span>⚠️</span>
+                          {passwordError}
+                        </div>
+                      )}
+
+                      <div className="space-y-4">
+                        {/* Current Password */}
+                        <div>
+                          <label className="block text-sm font-medium text-amber-700 mb-2">
+                            Current Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showCurrentPassword ? "text" : "password"}
+                              value={passwordData.currentPassword}
+                              onChange={(e) =>
+                                setPasswordData({
+                                  ...passwordData,
+                                  currentPassword: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-3 pr-12 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                              placeholder="Enter current password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowCurrentPassword(!showCurrentPassword)
+                              }
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400 hover:text-amber-600"
+                            >
+                              {showCurrentPassword ? "👁️" : "🙈"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* New Password */}
+                        <div>
+                          <label className="block text-sm font-medium text-amber-700 mb-2">
+                            New Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showNewPassword ? "text" : "password"}
+                              value={passwordData.newPassword}
+                              onChange={(e) =>
+                                setPasswordData({
+                                  ...passwordData,
+                                  newPassword: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-3 pr-12 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                              placeholder="Enter new password (min. 6 characters)"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowNewPassword(!showNewPassword)
+                              }
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400 hover:text-amber-600"
+                            >
+                              {showNewPassword ? "👁️" : "🙈"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Confirm New Password */}
+                        <div>
+                          <label className="block text-sm font-medium text-amber-700 mb-2">
+                            Confirm New Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showConfirmPassword ? "text" : "password"}
+                              value={passwordData.confirmPassword}
+                              onChange={(e) =>
+                                setPasswordData({
+                                  ...passwordData,
+                                  confirmPassword: e.target.value,
+                                })
+                              }
+                              className="w-full px-4 py-3 pr-12 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                              placeholder="Confirm new password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowConfirmPassword(!showConfirmPassword)
+                              }
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-400 hover:text-amber-600"
+                            >
+                              {showConfirmPassword ? "👁️" : "🙈"}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Password Requirements */}
+                        <div className="p-3 bg-amber-50 rounded-xl border border-amber-200">
+                          <p className="text-xs text-amber-600 font-medium mb-1">
+                            Password Requirements:
+                          </p>
+                          <ul className="text-xs text-amber-500 space-y-1">
+                            <li>• At least 6 characters long</li>
+                            <li>
+                              • Use a mix of letters, numbers, and symbols for
+                              better security
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="flex gap-4 pt-4">
+                          <button
+                            onClick={handlePasswordSubmit}
+                            disabled={isSubmittingPassword}
+                            className="flex-1 px-6 py-3 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                          >
+                            {isSubmittingPassword ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                Updating...
+                              </>
+                            ) : (
+                              "Update Password"
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setShowPasswordForm(false)}
+                            className="flex-1 px-6 py-3 border border-amber-300 text-amber-600 font-semibold rounded-xl hover:bg-amber-50 transition-all duration-300"
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

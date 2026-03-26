@@ -89,4 +89,22 @@ export const AuthApi = {
 
     return await response.json();
   },
+
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await fetch(`${BASE_URL}/changePassword`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Password change failed");
+    }
+
+    return await response.json();
+  },
 };
