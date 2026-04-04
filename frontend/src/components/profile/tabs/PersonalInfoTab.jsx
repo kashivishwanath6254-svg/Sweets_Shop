@@ -4,7 +4,7 @@ function PersonalInfoTab({
   setProfile,
   onUpdateProfile,
   onChangePassword,
-  onDeleteAccount,
+  // onDeleteAccount,
 }) {
   const registrationDate = user?.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -195,7 +195,8 @@ function PersonalInfoTab({
                 </span>
               </button>
 
-              <button
+              {/* Delete account functionality - currently hidden */}
+              {/* <button
                 onClick={onDeleteAccount}
                 className="w-full p-4 text-left bg-white hover:bg-red-50 border border-red-200 rounded-xl transition-all duration-300 flex items-center justify-between group"
               >
@@ -211,7 +212,7 @@ function PersonalInfoTab({
                 <span className="text-red-400 group-hover:translate-x-1 transition-transform">
                   →
                 </span>
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
