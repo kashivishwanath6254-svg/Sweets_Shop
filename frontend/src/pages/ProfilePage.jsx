@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../utils/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 import { AuthApi } from "../services/AuthApi";
 import PersonalInfoTab from "../components/profile/tabs/PersonalInfoTab";
 import OrdersTab from "../components/profile/tabs/OrdersTab";
