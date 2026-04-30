@@ -26,6 +26,7 @@ function Navbar() {
     { path: "/contact", label: "Contact Us" },
 
     ...(isAdmin ? [{ path: "/admin", label: "Admin" }] : []),
+    ...(isCustomer ? [{ path: "/cart", label: "Cart" }] : []),
     ...(isCustomer ? [{ path: "/profile", label: "Profile" }] : []),
   ];
 
