@@ -13,6 +13,8 @@ import LoginPage from "./Admin/LoginPage";
 import ProtectedAdminRoute from "./Admin/ProtectedAdminRoute";
 import ProtectedLoginRoute from "./Admin/ProtectedLoginRoute";
 import ProfilePage from "../pages/ProfilePage";
+import Cart from "../pages/Cart";
+import Checkout from "../pages/Checkout";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,6 +24,8 @@ const router = createBrowserRouter(
       <Route path="contact" element={<Contact />} />
       <Route path="products" element={<Products />} />
       <Route path="profile" element={<ProfilePage />} />
+      <Route path="cart" element={<Cart />} />
+      <Route path="checkout" element={<Checkout />} />
       <Route
         path="admin"
         element={

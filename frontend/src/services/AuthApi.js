@@ -71,4 +71,40 @@ export const AuthApi = {
     const data = await response.json();
     return data;
   },
+
+  updateProfile: async (updatedData) => {
+    const response = await fetch(`${BASE_URL}/updateProfile`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Update failed");
+    }
+
+    return await response.json();
+  },
+
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await fetch(`${BASE_URL}/changePassword`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ currentPassword, newPassword }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Password change failed");
+    }
+
+    return await response.json();
+  },
 };

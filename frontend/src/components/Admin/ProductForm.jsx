@@ -12,6 +12,8 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
     category: initialData.category || "",
     image: initialData.image || "",
     description: initialData.description || "",
+    stock: initialData.stock || 50,
+    isAvailable: initialData.isAvailable ?? true,
   });
 
   // Validation error messages for each field
@@ -41,6 +43,14 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
       newErrors.price = "Price must be a positive value";
     }
 
+    if (!formData.stock) {
+      newErrors.stock = "Stock is required";
+    } else if (Number.isNaN(Number(formData.stock))) {
+      newErrors.stock = "Stock must be a number";
+    } else if (Number(formData.stock) < 0) {
+      newErrors.stock = "Stock cannot be negative";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -48,11 +58,11 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
   // Update form state when user types
   // Also clears the error for that specific field
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     if (errors[name]) {
@@ -73,6 +83,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
     onSubmit({
       ...formData,
       price: Number(formData.price), // price must be numeric before sending to backend
+      stock: Number(formData.stock), // stock must be numeric before sending to backend
     });
   };
 
@@ -187,6 +198,52 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
                 <span>{errors.category}</span>
               </div>
             )}
+          </div>
+
+          {/* Stock */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-amber-800">
+              Stock <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="stock"
+              value={formData.stock}
+              onChange={handleChange}
+              placeholder="50"
+              min="0"
+              step="1"
+              className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 ${
+                errors.stock
+                  ? "border-red-300 bg-red-50"
+                  : "border-amber-200 bg-white"
+              }`}
+            />
+            {errors.stock && (
+              <div className="flex items-center gap-2 text-red-600 text-sm">
+                <span>⚠️</span>
+                <span>{errors.stock}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Availability */}
+          <div className="space-y-2">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="isAvailable"
+                checked={formData.isAvailable}
+                onChange={handleChange}
+                className="w-5 h-5 text-amber-600 rounded focus:ring-amber-400 focus:ring-2"
+              />
+              <span className="text-sm font-semibold text-amber-800">
+                🟢 Product Available for Purchase
+              </span>
+            </label>
+            <p className="text-xs text-amber-500">
+              Uncheck to temporarily hide this product from customers
+            </p>
           </div>
 
           {/* Image URL */}

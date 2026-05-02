@@ -28,14 +28,14 @@ function AuthProvider({ children }) {
   // 🔹 Login
   const login = async (email, password) => {
     const data = await AuthApi.login(email, password);
-    setUser(data);
-    return data; // let component decide redirect
+    setUser(data.user); // Set full user data from backend
+    return data;
   };
 
   // 🔹 Register
   const register = async (email, password, profileName) => {
     const data = await AuthApi.register(email, password, profileName);
-    setUser(data);
+    setUser(data.user); // Set full user data from backend
     return data;
   };
 
@@ -49,6 +49,7 @@ function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         isAuthenticated,
         login,

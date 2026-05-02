@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.models.js";
 
+const salt = await bcrypt.genSalt(10);
+
 export const registerUser = async (req, res, next) => {
   try {
     const { email, password, profileName } = req.body;
@@ -18,7 +20,7 @@ export const registerUser = async (req, res, next) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
       email,
@@ -29,10 +31,15 @@ export const registerUser = async (req, res, next) => {
 
     res.status(201).json({
       message: "User created successfully",
-      id: user._id,
-      email: user.email,
-      profileName: user.profileName,
-      role: user.role,
+      user: {
+        _id: user._id,
+        profileName: user.profileName,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -79,10 +86,15 @@ export const loginUser = async (req, res, next) => {
 
     res.status(200).json({
       message: "Login successful",
-      id: user._id,
-      email: user.email,
-      profileName: user.profileName,
-      role: user.role,
+      user: {
+        _id: user._id,
+        profileName: user.profileName,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
     });
   } catch (error) {
     next(error);
@@ -101,4 +113,30 @@ export const logoutUser = (req, res) => {
 
 export const getCurrentUser = (req, res) => {
   res.status(200).json(req.user);
+};
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Both fields are required" });
+    }
+
+    const user = await User.findById(userId).select("+password");
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Wrong password" });
+    }
+
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.clearCookie("token");
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    next(error);
+  }
 };

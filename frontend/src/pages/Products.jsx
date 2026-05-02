@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import API_BASE_URL from "../config/api.js";
-// import products from "../json/products.json";
+import ProductCard from "../components/ProductCard.jsx";
 
 function Products() {
   const [products, setProducts] = useState({ categories: [] });
@@ -39,60 +39,9 @@ function Products() {
             {category.category}
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {category.items.map((item) => (
-              <div
-                key={item.id}
-                className="p-6 rounded-2xl bg-white shadow-lg
-                       hover:shadow-2xl hover:shadow-amber-200/50
-                       hover:scale-[1.02] transition-all duration-300 border border-amber-200 flex flex-col h-full"
-              >
-                <div className="h-48 bg-linear-to-br from-amber-100 to-amber-50 rounded-xl mb-5 flex items-center justify-center border border-amber-200">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full h-full object-cover rounded-xl transition-transform duration-500"
-                    onError={(e) => {
-                      // Fallback if image fails to load
-                      e.target.style.display = "none";
-                      e.target.nextSibling.style.display = "flex";
-                    }}
-                  />
-                  <div
-                    className={`w-full h-full flex items-center justify-center ${
-                      item.image ? "hidden" : "flex"
-                    }`}
-                  >
-                    <span className="text-amber-400 italic text-center px-4">
-                      {item.name}
-                      <br />
-                      <span className="text-sm">(Image coming soon)</span>
-                    </span>
-                  </div>
-                </div>
-
-                <h3 className="text-2xl font-bold mb-2 tracking-wide text-amber-800">
-                  {item.name}
-                </h3>
-
-                <p className="text-amber-600/90 mb-6 leading-relaxed">
-                  {item.description}
-                </p>
-
-                <span className="text-2xl font-extrabold bg-linear-to-r from-amber-600 to-amber-500 bg-clip-text text-transparent">
-                  ₹{item.price}/Kg
-                </span>
-
-                <button
-                  className="mt-auto w-full py-3 rounded-xl bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold
-                               hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
-                >
-                  Add to Cart
-                  <span className="material-symbols-outlined">
-                    shopping_cart
-                  </span>
-                </button>
-              </div>
+              <ProductCard key={item.id} product={item} />
             ))}
           </div>
         </div>
@@ -102,4 +51,3 @@ function Products() {
 }
 
 export default Products;
-

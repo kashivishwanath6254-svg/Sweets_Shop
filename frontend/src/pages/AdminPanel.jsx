@@ -198,15 +198,9 @@ function AdminPanel() {
                 </p>
               </div>
               <div className="bg-white p-4 rounded-xl shadow-sm border border-amber-200">
-                <p className="text-sm text-amber-600">Average Price</p>
-                <p className="text-2xl font-bold text-amber-800">
-                  ₹
-                  {products.length > 0
-                    ? Math.round(
-                        products.reduce((sum, p) => sum + (p.price || 0), 0) /
-                          products.length
-                      )
-                    : 0}
+                <p className="text-sm text-amber-600">Low Stock Items</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {products.filter((p) => p.stock <= 10).length}
                 </p>
               </div>
             </div>

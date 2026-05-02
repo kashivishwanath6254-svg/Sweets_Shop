@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
-import { AuthContext } from "../utils/AuthContext";
+import { AuthContext } from "../context/AuthContext";
 
 function Navbar() {
   const { user, logout, isAuthenticated } = useContext(AuthContext);
@@ -26,6 +26,7 @@ function Navbar() {
     { path: "/contact", label: "Contact Us" },
 
     ...(isAdmin ? [{ path: "/admin", label: "Admin" }] : []),
+    ...(isCustomer ? [{ path: "/cart", label: "Cart" }] : []),
     ...(isCustomer ? [{ path: "/profile", label: "Profile" }] : []),
   ];
 

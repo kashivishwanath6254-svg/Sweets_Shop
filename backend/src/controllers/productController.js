@@ -18,6 +18,8 @@ export const getProductsGroupedByCategory = async (req, res, next) => {
         price: item.price,
         image: item.image || null,
         description: item.description,
+        stock: item.stock,
+        isAvailable: item.isAvailable,
       });
     });
 

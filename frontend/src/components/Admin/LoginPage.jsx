@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../utils/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -38,7 +38,7 @@ function LoginPage() {
         user = await login(email, password);
 
         // Handle role-based routing
-        switch (user.role) {
+        switch (user.user.role) {
           case "admin":
             navigate("/admin");
             break;
