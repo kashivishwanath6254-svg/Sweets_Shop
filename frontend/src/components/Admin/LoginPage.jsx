@@ -14,10 +14,17 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login, register } = useContext(AuthContext);
 
-  // Function to fill demo credentials
-  const fillDemoCredentials = () => {
+  // Function to fill demo admin credentials
+  const fillAdminCredentials = () => {
     setEmail("admin@sweets.com");
     setPassword("admin123");
+    setError(null);
+  };
+
+  // Function to fill demo user credentials
+  const fillUserCredentials = () => {
+    setEmail("test@gmail.com");
+    setPassword("test123");
     setError(null);
   };
 
@@ -212,53 +219,45 @@ function LoginPage() {
           {/* Demo Credentials Section - Only shown in login mode */}
           {!isRegisterMode && (
             <div className="mt-8 p-5 bg-linear-to-br from-amber-50 to-amber-100/50 rounded-xl border border-amber-300/30 shadow-sm">
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 bg-amber-200 rounded-full flex items-center justify-center">
                   <span className="text-amber-700">🔐</span>
                 </div>
                 <p className="text-sm font-semibold text-amber-800">
-                  Demo Admin Credentials
+                  Quick Demo Access
                 </p>
               </div>
-              <div className="space-y-2.5 pl-11">
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-600">📧</span>
-                  <div>
-                    <p className="text-xs text-amber-500">Email</p>
-                    <p className="text-sm font-mono text-amber-700">
-                      admin@sweets.com
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-amber-600">🔑</span>
-                  <div>
-                    <p className="text-xs text-amber-500">Password</p>
-                    <p className="text-sm font-mono text-amber-700">admin123</p>
-                  </div>
-                </div>
-              </div>
 
-              {/* Auto-fill button */}
-              <div className="mt-4 pt-3 border-t border-amber-300/30">
+              {/* Demo Buttons */}
+              <div className="space-y-3">
                 <button
                   type="button"
-                  onClick={fillDemoCredentials}
-                  className="w-full py-2 text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors flex items-center justify-center gap-2 group"
+                  onClick={fillAdminCredentials}
+                  className="w-full py-3 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
                 >
-                  <span className="group-hover:scale-110 transition-transform">
-                    ⚡
-                  </span>
-                  Click to auto-fill demo credentials
+                  <span className="text-lg">👑</span>
+                  Login as Admin
                   <span className="group-hover:translate-x-1 transition-transform">
                     →
                   </span>
                 </button>
-                <p className="text-xs text-amber-500/80 text-center mt-3">
-                  ⚠️ For demonstration only. Use secure authentication in
-                  production.
-                </p>
+
+                <button
+                  type="button"
+                  onClick={fillUserCredentials}
+                  className="w-full py-3 bg-white border-2 border-amber-400 text-amber-700 font-semibold rounded-xl hover:bg-amber-50 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center gap-2 group"
+                >
+                  <span className="text-lg">👤</span>
+                  Login as User
+                  <span className="group-hover:translate-x-1 transition-transform">
+                    →
+                  </span>
+                </button>
               </div>
+
+              <p className="text-xs text-amber-500/80 text-center mt-4">
+                ⚡ Click any button to auto-fill demo credentials
+              </p>
             </div>
           )}
         </div>
