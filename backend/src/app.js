@@ -8,6 +8,7 @@ import productsRouter from "./routes/products.routes.js";
 import adminProductsRouter from "./routes/admin.products.routes.js";
 import userRouter from "./routes/user.routes.js";
 import cartRouter from "./routes/cart.routes.js";
+import addressRouter from "./routes/address.routes.js";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/admin/products", adminProductsRouter);
 app.use("/api/users", userRouter);
 app.use("/api/cart", cartRouter);
+app.use("/api/address", addressRouter);
 
 //
 // 👉 Serve React Build
