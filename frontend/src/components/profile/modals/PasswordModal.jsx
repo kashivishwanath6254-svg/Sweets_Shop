@@ -1,3 +1,5 @@
+import Button from "../../ui/Button";
+
 function PasswordModal({ password, setPassword, onSubmit }) {
   const handlePasswordSubmit = async () => {
     // Validation
@@ -194,26 +196,28 @@ function PasswordModal({ password, setPassword, onSubmit }) {
           </div>
 
           <div className="flex gap-4 pt-4">
-            <button
-              onClick={handlePasswordSubmit}
-              disabled={password.isSubmitting}
-              className="flex-1 px-6 py-3 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {password.isSubmitting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Updating...
-                </>
-              ) : (
-                "Update Password"
-              )}
-            </button>
-            <button
-              onClick={() => setPassword((prev) => ({ ...prev, show: false }))}
-              className="flex-1 px-6 py-3 border border-amber-300 text-amber-600 font-semibold rounded-xl hover:bg-amber-50 transition-all duration-300"
-            >
-              Cancel
-            </button>
+          <Button
+            onClick={handlePasswordSubmit}
+            disabled={password.isSubmitting}
+            variant="primary"
+            className="flex-1"
+          >
+            {password.isSubmitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Updating...
+              </>
+            ) : (
+              "Update Password"
+            )}
+          </Button>
+          <Button
+            onClick={() => setPassword((prev) => ({ ...prev, show: false }))}
+            variant="outline"
+            className="flex-1"
+          >
+            Cancel
+          </Button>
           </div>
         </div>
       </div>

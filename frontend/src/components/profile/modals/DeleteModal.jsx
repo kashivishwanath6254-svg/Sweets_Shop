@@ -1,3 +1,5 @@
+import Button from "../ui/Button";
+
 function DeleteModal({
   showDeleteConfirm,
   setShowDeleteConfirm,
@@ -16,18 +18,20 @@ function DeleteModal({
           addresses will be permanently removed.
         </p>
         <div className="flex gap-4">
-          <button
+          <Button
             onClick={onDeleteAccount}
-            className="flex-1 px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition"
+            variant="danger"
+            className="flex-1"
           >
             Yes, Delete
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setShowDeleteConfirm(false)}
-            className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition"
+            variant="outline"
+            className="flex-1"
           >
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </div>
