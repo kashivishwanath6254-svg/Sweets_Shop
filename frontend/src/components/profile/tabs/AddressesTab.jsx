@@ -4,10 +4,15 @@ function AddressesTab({ address, setAddress, actions }) {
       ...prev,
       editingIndex: null,
       newAddress: {
-        type: "Home",
-        address: "",
+        fullName: "",
+        phone: "",
+        street: "",
         city: "",
-        pincode: "",
+        state: "",
+        postalCode: "",
+        country: "",
+        label: "Home",
+        isDefault: false,
       },
       showForm: true,
     }));
@@ -28,9 +33,9 @@ function AddressesTab({ address, setAddress, actions }) {
 
       {/* Address List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {address.list.map((addr, index) => (
+        {address.list.map((addr) => (
           <div
-            key={addr.id}
+            key={addr._id}
             className="p-5 bg-white rounded-xl border border-amber-200 hover:shadow-lg transition-all relative"
           >
             {addr.isDefault && (
@@ -40,32 +45,32 @@ function AddressesTab({ address, setAddress, actions }) {
             )}
             <div className="flex items-start gap-3 mb-3">
               <span className="text-amber-500 text-xl">
-                {addr.type === "Home" ? "🏠" : "💼"}
+                {addr.label === "Home" ? "🏠" : "💼"}
               </span>
               <div>
-                <h3 className="font-semibold text-amber-800">{addr.type}</h3>
+                <h3 className="font-semibold text-amber-800">{addr.label}</h3>
                 <p className="text-amber-600 text-sm mt-1">
-                  {addr.address}, {addr.city} - {addr.pincode}
+                  {addr.street}, {addr.city} - {addr.postalCode}
                 </p>
               </div>
             </div>
             <div className="flex gap-2 mt-4 pt-3 border-t border-amber-100">
               {!addr.isDefault && (
                 <button
-                  onClick={() => actions.onSetDefault(index)}
+                  onClick={() => actions.onSetDefault(addr._id)}
                   className="px-3 py-1.5 text-xs bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition"
                 >
                   Set as Default
                 </button>
               )}
               <button
-                onClick={() => actions.onEdit(index)}
+                onClick={() => actions.onEdit(addr)}
                 className="px-3 py-1.5 text-xs bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition"
               >
                 Edit
               </button>
               <button
-                onClick={() => actions.onDelete(index)}
+                onClick={() => actions.onDelete(addr._id)}
                 className="px-3 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
               >
                 Delete
@@ -90,13 +95,13 @@ function AddressesTab({ address, setAddress, actions }) {
                   Address Type
                 </label>
                 <select
-                  value={address.newAddress.type}
+                  value={address.newAddress.label}
                   onChange={(e) =>
                     setAddress((prev) => ({
                       ...prev,
                       newAddress: {
                         ...prev.newAddress,
-                        type: e.target.value,
+                        label: e.target.value,
                       },
                     }))
                   }
@@ -107,19 +112,104 @@ function AddressesTab({ address, setAddress, actions }) {
                   <option>Other</option>
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-amber-700 mb-2">
+                  Full Name
+                </label>
+
+                <input
+                  type="text"
+                  value={address.newAddress.fullName}
+                  onChange={(e) =>
+                    setAddress((prev) => ({
+                      ...prev,
+                      newAddress: {
+                        ...prev.newAddress,
+                        fullName: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-amber-700 mb-2">
+                  Phone
+                </label>
+
+                <input
+                  type="text"
+                  value={address.newAddress.phone}
+                  onChange={(e) =>
+                    setAddress((prev) => ({
+                      ...prev,
+                      newAddress: {
+                        ...prev.newAddress,
+                        phone: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-amber-700 mb-2">
+                  State
+                </label>
+
+                <input
+                  type="text"
+                  value={address.newAddress.state}
+                  onChange={(e) =>
+                    setAddress((prev) => ({
+                      ...prev,
+                      newAddress: {
+                        ...prev.newAddress,
+                        state: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-amber-700 mb-2">
+                  Country
+                </label>
+
+                <input
+                  type="text"
+                  value={address.newAddress.country}
+                  onChange={(e) =>
+                    setAddress((prev) => ({
+                      ...prev,
+                      newAddress: {
+                        ...prev.newAddress,
+                        country: e.target.value,
+                      },
+                    }))
+                  }
+                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-amber-700 mb-2">
                   Street Address
                 </label>
                 <input
                   type="text"
-                  value={address.newAddress.address}
+                  value={address.newAddress.street}
                   onChange={(e) =>
                     setAddress((prev) => ({
                       ...prev,
                       newAddress: {
                         ...prev.newAddress,
-                        address: e.target.value,
+                        street: e.target.value,
                       },
                     }))
                   }
@@ -148,17 +238,17 @@ function AddressesTab({ address, setAddress, actions }) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-amber-700 mb-2">
-                    Pincode
+                    PostalCode
                   </label>
                   <input
                     type="text"
-                    value={address.newAddress.pincode}
+                    value={address.newAddress.postalCode}
                     onChange={(e) =>
                       setAddress((prev) => ({
                         ...prev,
                         newAddress: {
                           ...prev.newAddress,
-                          pincode: e.target.value,
+                          postalCode: e.target.value,
                         },
                       }))
                     }

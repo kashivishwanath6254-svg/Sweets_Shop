@@ -1,96 +1,73 @@
+import { GradientBackground, SectionHeader } from "../components/ui/Layout";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Input, { Textarea } from "../components/ui/Input";
+import { AccentLine } from "../components/ui/Decorative";
 function Contact() {
   return (
-    <section className="bg-linear-to-br from-amber-50 to-amber-100 min-h-screen py-20 px-6">
+    <GradientBackground className="min-h-screen py-20 px-6">
       <div className="max-w-4xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="w-24 h-1 bg-amber-400 rounded-full"></div>
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-linear-to-r from-amber-600 to-amber-500 bg-clip-text text-transparent">
-            Contact Us
-          </h1>
-          <p className="text-xl text-amber-600/80 max-w-2xl mx-auto leading-relaxed">
-            We'd love to hear from you. Reach out to us for any inquiries,
-            orders, or just to say hello!
-          </p>
-        </div>
+        <SectionHeader 
+          title="Contact Us"
+          subtitle="We'd love to hear from you. Reach out to us for any inquiries, orders, or just to say hello!"
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-amber-200">
+          <Card variant="section">
             <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
-              <span className="w-2 h-8 bg-amber-500 rounded-full"></span>
+              <AccentLine variant="small" />
               Send us a Message
             </h2>
 
             <form className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-amber-700 font-medium">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
-                    placeholder="John"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-amber-700 font-medium">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
-                    placeholder="Doe"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-amber-700 font-medium">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
-                  placeholder="john@example.com"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-amber-700 font-medium">Subject</label>
-                <input
+                <Input 
+                  label="First Name"
                   type="text"
-                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50"
-                  placeholder="How can we help you?"
+                  placeholder="John"
+                  variant="form"
+                />
+                <Input 
+                  label="Last Name"
+                  type="text"
+                  placeholder="Doe"
+                  variant="form"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-amber-700 font-medium">Message</label>
-                <textarea
-                  rows="5"
-                  className="w-full px-4 py-3 border border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 bg-amber-50/50 resize-none"
-                  placeholder="Tell us more about your inquiry..."
-                ></textarea>
-              </div>
+              <Input 
+                label="Email"
+                type="email"
+                placeholder="john@example.com"
+                variant="form"
+              />
 
-              <button
-                type="submit"
-                className="w-full py-4 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"
-              >
+              <Input 
+                label="Subject"
+                type="text"
+                placeholder="How can we help you?"
+                variant="form"
+              />
+
+              <Textarea 
+                label="Message"
+                placeholder="Tell us more about your inquiry..."
+                variant="form"
+              />
+
+              <Button variant="fullWidth" type="submit">
                 Send Message
-              </button>
+              </Button>
             </form>
-          </div>
+          </Card>
 
           {/* Contact Information */}
           <div className="space-y-8">
             {/* Contact Cards */}
             <div className="bg-white rounded-2xl shadow-xl p-8 border border-amber-200">
               <h2 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
+                <AccentLine variant="small" />
                 <span className="w-2 h-8 bg-amber-500 rounded-full"></span>
                 Get in Touch
               </h2>
@@ -168,7 +145,7 @@ function Contact() {
           </div>
         </div>
       </div>
-    </section>
+    </GradientBackground>
   );
 }
 

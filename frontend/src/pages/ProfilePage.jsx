@@ -1,7 +1,8 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { AuthApi } from "../services/AuthApi";
+import { AddressApi } from "../services/AddressApi";
 import PersonalInfoTab from "../components/profile/tabs/PersonalInfoTab";
 import OrdersTab from "../components/profile/tabs/OrdersTab";
 import AddressesTab from "../components/profile/tabs/AddressesTab";
@@ -37,33 +38,38 @@ function ProfilePage() {
 
   // Address state
   const [address, setAddress] = useState({
-    list: [
-      {
-        id: 1,
-        type: "Home",
-        address: "123 Sweet Street, Block A",
-        city: "Delhi",
-        pincode: "110001",
-        isDefault: true,
-      },
-      {
-        id: 2,
-        type: "Work",
-        address: "456 Business Plaza, Sector 18",
-        city: "Noida",
-        pincode: "201301",
-        isDefault: false,
-      },
-    ],
+    list: [],
     showForm: false,
     editingIndex: null,
     newAddress: {
-      type: "Home",
-      address: "",
+      fullName: "",
+      phone: "",
+      street: "",
       city: "",
-      pincode: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      label: "Home",
+      isDefault: false,
     },
   });
+
+  const fetchAddresses = async () => {
+    try {
+      const data = await AddressApi.getAddresses();
+
+      setAddress((prev) => ({
+        ...prev,
+        list: data || [],
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
 
   // UI state
   const [ui, setUi] = useState({
@@ -162,54 +168,73 @@ function ProfilePage() {
     alert(`Adding items from order ${orderId} to cart!`);
   };
 
-  const handleAddAddress = () => {
-    if (address.editingIndex !== null) {
-      // Update existing address
-      const updatedAddresses = address.list.map((addr, index) =>
-        index === address.editingIndex
-          ? { ...address.newAddress, id: addr.id }
-          : addr,
-      );
+  const handleAddAddress = async () => {
+    try {
+      if (address.editingIndex) {
+        await AddressApi.updateAddress(
+          address.editingIndex,
+          address.newAddress,
+        );
+      } else {
+        await AddressApi.addAddress(address.newAddress);
+      }
+
+      await fetchAddresses();
+
       setAddress((prev) => ({
         ...prev,
-        list: updatedAddresses,
+        showForm: false,
+        editingIndex: null,
+        newAddress: {
+          fullName: "",
+          phone: "",
+          street: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "",
+          label: "Home",
+          isDefault: false,
+        },
       }));
-    } else {
-      // Add new address
-      setAddress((prev) => ({
-        ...prev,
-        list: [
-          ...prev.list,
-          { ...prev.newAddress, id: prev.list.length + 1, isDefault: false },
-        ],
-      }));
+    } catch (error) {
+      console.error(error);
     }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await AddressApi.deleteAddress(addressId);
+      await fetchAddresses();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      await AddressApi.setDefaultAddress(addressId);
+      await fetchAddresses();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEditAddress = (addressItem) => {
     setAddress((prev) => ({
       ...prev,
-      showForm: false,
-      editingIndex: null,
-      newAddress: { type: "Home", address: "", city: "", pincode: "" },
-    }));
-  };
-
-  const handleDeleteAddress = (index) => {
-    const updatedAddresses = address.list.filter((_, i) => i !== index);
-    setAddress((prev) => ({ ...prev, list: updatedAddresses }));
-  };
-
-  const handleSetDefaultAddress = (index) => {
-    const updatedAddresses = address.list.map((addr, i) => ({
-      ...addr,
-      isDefault: i === index,
-    }));
-    setAddress((prev) => ({ ...prev, list: updatedAddresses }));
-  };
-
-  const handleEditAddress = (index) => {
-    setAddress((prev) => ({
-      ...prev,
-      editingIndex: index,
-      newAddress: prev.list[index],
+      editingIndex: addressItem._id,
+      newAddress: {
+        fullName: addressItem.fullName,
+        phone: addressItem.phone,
+        street: addressItem.street,
+        city: addressItem.city,
+        state: addressItem.state,
+        postalCode: addressItem.postalCode,
+        country: addressItem.country,
+        label: addressItem.label,
+        isDefault: addressItem.isDefault,
+      },
       showForm: true,
     }));
   };
