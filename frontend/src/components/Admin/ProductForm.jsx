@@ -2,7 +2,7 @@
 // Controlled form with local state + validation
 
 import { useState } from "react";
-import Button from "./ui/Button";
+import Button from "../ui/Button";
 
 function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
   // Local form state (controlled inputs)

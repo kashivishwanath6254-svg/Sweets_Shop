@@ -1,4 +1,4 @@
-import Button from "./ui/Button";
+import Button from "../ui/Button";
 
 function ClearCartModal({ onConfirm, onCancel }) {
   return (
@@ -12,18 +12,10 @@ function ClearCartModal({ onConfirm, onCancel }) {
           undone.
         </p>
         <div className="flex gap-4">
-          <Button
-            onClick={onConfirm}
-            variant="danger"
-            className="flex-1"
-          >
+          <Button onClick={onConfirm} variant="danger" className="flex-1">
             Yes, Clear Cart
           </Button>
-          <Button
-            onClick={onCancel}
-            variant="outline"
-            className="flex-1"
-          >
+          <Button onClick={onCancel} variant="outline" className="flex-1">
             Cancel
           </Button>
         </div>
