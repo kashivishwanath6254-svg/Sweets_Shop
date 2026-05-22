@@ -7,6 +7,10 @@ export const createOrder = async (req, res, next) => {
 
     const { shippingAddress, paymentMethod } = req.body;
 
+    if (!shippingAddress) {
+      return res.status(400).json({ message: "No address found" });
+    }
+
     const isAddressIncomplete = Object.values(shippingAddress).some(
       (value) => !value?.trim()
     );
@@ -17,10 +21,33 @@ export const createOrder = async (req, res, next) => {
         .json({ message: "Please provide complete shipping details" });
     }
 
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ user: userId }).populate("items.product");
 
-    if (!cart || cart.length === 0) {
+    if (!cart || cart.items.length === 0) {
       return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    for (const item of cart.items) {
+      const product = item.product;
+
+      if (!product) {
+        return res.status(400).json({
+          message: "No products found",
+        });
+      }
+
+      if (!product.isAvailable) {
+        return res.status(400).json({
+          message: `${product.name} is currently unavailable`,
+        });
+      }
+
+      //Not enough Stock
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          message: `Only ${product.stock} units of ${product.name} left in stock`,
+        });
+      }
     }
 
     const orderItems = cart.items.map((item) => ({
@@ -38,9 +65,9 @@ export const createOrder = async (req, res, next) => {
 
     const deliveryFee = subtotal > 500 ? 0 : 50;
 
-    const tax = subtotal * 0.05;
+    const tax = Number((subtotal * 0.05).toFixed(2));
 
-    const totalAmount = subtotal + deliveryFee + tax;
+    const totalAmount = Number((subtotal + deliveryFee + tax).toFixed(2));
 
     const order = await Order.create({
       user: userId,
@@ -53,12 +80,118 @@ export const createOrder = async (req, res, next) => {
       paymentMethod: paymentMethod || "COD",
     });
 
-    cart.items = [];
+    for (const item of cart.items) {
+      const product = item.product;
 
-    await cart.save();
+      product.stock -= item.quantity;
+
+      if (product.stock <= 0) {
+        product.isAvailable = false;
+      }
+
+      await product.save();
+    }
+
+    await Cart.findByIdAndUpdate(cart._id, {
+      $set: { items: [] },
+    });
 
     return res.status(201).json({
       message: "Order placed successfully",
+      order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMyOrders = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const orders = await Order.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .populate("items.product");
+
+    const message =
+      orders.length === 0 ? "No orders found" : "Orders fetched successfully";
+
+    return res.status(200).json({
+      message,
+      orders,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getOrderById = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const orderId = req.params.orderId;
+
+    const order = await Order.findById(orderId).populate("items.product");
+
+    //Order not found
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    //OwnerShip check
+    if (order.user.toString() !== userId) {
+      return res.status(403).json({ message: "Unauthorized access to order" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Order fetched successfully", order });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const cancelOrder = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const orderId = req.params.orderId;
+
+    const order = await Order.findById(orderId).populate("items.product");
+
+    //Order not found
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    //OwnerShip check
+    if (order.user.toString() !== userId) {
+      return res.status(403).json({ message: "Unauthorized access to order" });
+    }
+
+    //Checking if order can be cancelled
+    if (order.orderStatus !== "PLACED" && order.orderStatus !== "CONFIRMED") {
+      return res.status(400).json({
+        message: "Order cannot be cancelled!",
+      });
+    }
+
+    //Restoring stock
+    for (const item of order.items) {
+      if (!item.product) continue;
+
+      item.product.stock += item.quantity;
+
+      if (item.product.stock > 0) {
+        item.product.isAvailable = true;
+      }
+
+      await item.product.save();
+    }
+
+    order.orderStatus = "CANCELLED";
+    await order.save();
+
+    return res.status(200).json({
+      message: "Order canceled successfully",
       order,
     });
   } catch (error) {
