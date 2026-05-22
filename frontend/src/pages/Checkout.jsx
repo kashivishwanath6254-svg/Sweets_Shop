@@ -1,11 +1,12 @@
 import { useCart } from "../hooks/useCart";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { AddressApi } from "../services/AddressApi";
+import { AddressApi } from "../services/AddressApi.js";
+import { OrderApi } from "../services/OrderApi.js";
 import Button from "../components/ui/Button";
 
 function Checkout() {
-  const { cart, loading, error, clearCart } = useCart();
+  const { cart, loading, error } = useCart();
   const navigate = useNavigate();
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -18,11 +19,14 @@ function Checkout() {
     postalCode: "",
     country: "",
   });
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [isLoadingAddresses, setIsLoadingAddresses] = useState(true);
+  const [placeOrderError, setPlaceOrderError] = useState(null);
 
   const updateShippingAddress = (field, value) => {
     setSelectedAddressId(null);
+    setPlaceOrderError(null);
 
     setShippingAddress((prev) => ({
       ...prev,
@@ -46,13 +50,10 @@ function Checkout() {
     const fetchAddresses = async () => {
       try {
         const data = await AddressApi.getAddresses();
-
         const addresses = data || [];
-
         setSavedAddresses(addresses);
 
         const defaultAddress = addresses.find((addr) => addr.isDefault);
-
         if (defaultAddress) {
           setSelectedAddressId(defaultAddress._id);
           populateShippingAddress(defaultAddress);
@@ -108,7 +109,11 @@ function Checkout() {
           <p className="text-amber-600 mb-8">
             Add some sweets to your cart before checkout.
           </p>
-          <Button variant="primary" fullWidth onClick={() => navigate("/products")}>
+          <Button
+            variant="primary"
+            fullWidth
+            onClick={() => navigate("/products")}
+          >
             <span>🍬</span>
             Browse Our Sweets
             <span>→</span>
@@ -123,32 +128,42 @@ function Checkout() {
     0,
   );
   const deliveryFee = subtotal > 500 ? 0 : 50;
-  const tax = subtotal * 0.05;
-  const total = subtotal + deliveryFee + tax;
+  const tax = Number((subtotal * 0.05).toFixed(2));
+  const total = Number((subtotal + deliveryFee + tax).toFixed(2));
 
   const handlePlaceOrder = async () => {
+    // Reset error
+    setPlaceOrderError(null);
+
+    // Safer address validation with optional chaining
     const isAddressIncomplete = Object.values(shippingAddress).some(
-      (value) => !value.trim(),
+      (value) => !value?.trim(),
     );
 
     if (isAddressIncomplete) {
-      alert("Please fill in all delivery details");
+      setPlaceOrderError("Please fill in all delivery details");
       return;
     }
 
     setIsPlacingOrder(true);
+
     try {
-      // Simulate order creation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Actual API call to create order
+      const response = await OrderApi.placeOrder({
+        shippingAddress,
+        paymentMethod,
+      });
 
-      // Clear cart after successful order
-      await clearCart();
+      // Navigate to order confirmation page
+      navigate(`/orders/${response.order._id}`, {
+        replace: true,
+      });
 
-      alert("Order placed successfully! 🎉");
-      navigate("/products");
     } catch (error) {
-      console.error(error);
-      alert("Failed to place order");
+      console.error("Order placement failed:", error);
+      setPlaceOrderError(
+        error.response?.message || "Failed to place order. Please try again.",
+      );
     } finally {
       setIsPlacingOrder(false);
     }
@@ -271,6 +286,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("fullName", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="Rahul Sharma"
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -286,6 +302,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("street", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="123 Main Street, Apartment / House No."
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -301,6 +318,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("city", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="Mumbai"
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -316,6 +334,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("postalCode", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="400001"
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -323,7 +342,7 @@ function Checkout() {
 
                 <div>
                   <label className="block text-sm font-semibold text-amber-700 mb-2">
-                    State
+                    State <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -331,6 +350,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("state", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="Maharashtra"
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -338,7 +358,7 @@ function Checkout() {
 
                 <div>
                   <label className="block text-sm font-semibold text-amber-700 mb-2">
-                    Country
+                    Country <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -346,6 +366,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("country", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="India"
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -361,6 +382,7 @@ function Checkout() {
                     onChange={(e) =>
                       updateShippingAddress("phone", e.target.value)
                     }
+                    disabled={isPlacingOrder}
                     placeholder="+91 98765 43210"
                     className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all duration-300 bg-amber-50/30"
                   />
@@ -388,17 +410,7 @@ function Checkout() {
                   >
                     <div className="flex items-center gap-4 flex-1">
                       <div className="w-16 h-16 bg-linear-to-br from-amber-100 to-amber-50 rounded-xl flex items-center justify-center border border-amber-200">
-                        <span className="text-2xl">
-                          {item.product.image ? (
-                            <img
-                              src={item.product.image}
-                              alt={item.product.name}
-                              className="w-full h-full object-cover"
-                            ></img>
-                          ) : (
-                            "🍬"
-                          )}
-                        </span>
+                        <span className="text-2xl">🍬</span>
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-amber-800">
@@ -468,6 +480,42 @@ function Checkout() {
                     </div>
                   </div>
                 )}
+
+                {/* Payment Method Selection */}
+                <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                  <label className="block text-sm font-semibold text-amber-700 mb-3">
+                    Payment Method
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="COD"
+                        checked={paymentMethod === "COD"}
+                        onChange={(e) => setPaymentMethod(e.target.value)}
+                        className="w-4 h-4 text-amber-500 focus:ring-amber-400"
+                      />
+                      <span className="text-amber-700">
+                        Cash on Delivery (COD)
+                      </span>
+                    </label>
+
+                    {/* Future payment methods can be added here */}
+                    {/* 
+                    <label className="flex items-center gap-3 cursor-pointer opacity-50">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="CARD"
+                        disabled
+                        className="w-4 h-4"
+                      />
+                      <span className="text-amber-500">Card Payment (Coming Soon)</span>
+                    </label>
+                    */}
+                  </div>
+                </div>
               </div>
 
               <div className="border-t-2 border-amber-200 pt-4 mb-6">
@@ -476,6 +524,14 @@ function Checkout() {
                   <span className="text-2xl">₹{total.toFixed(2)}</span>
                 </div>
               </div>
+
+              {/* Error Message Display */}
+              {placeOrderError && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-center gap-2">
+                  <span>⚠️</span>
+                  {placeOrderError}
+                </div>
+              )}
 
               <Button
                 onClick={handlePlaceOrder}
