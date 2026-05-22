@@ -1,3 +1,5 @@
+import Button from "../ui/Button";
+
 function ClearCartModal({ onConfirm, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -10,18 +12,12 @@ function ClearCartModal({ onConfirm, onCancel }) {
           undone.
         </p>
         <div className="flex gap-4">
-          <button
-            onClick={onConfirm}
-            className="flex-1 px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition"
-          >
+          <Button onClick={onConfirm} variant="danger" className="flex-1">
             Yes, Clear Cart
-          </button>
-          <button
-            onClick={onCancel}
-            className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition"
-          >
+          </Button>
+          <Button onClick={onCancel} variant="outline" className="flex-1">
             Cancel
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,12 +1,14 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { AuthApi } from "../services/AuthApi";
+import { AddressApi } from "../services/AddressApi";
+import { OrderApi } from "../services/OrderApi";
 import PersonalInfoTab from "../components/profile/tabs/PersonalInfoTab";
 import OrdersTab from "../components/profile/tabs/OrdersTab";
 import AddressesTab from "../components/profile/tabs/AddressesTab";
 import PasswordModal from "../components/profile/modals/PasswordModal";
-import DeleteModal from "../components/profile/modals/DeleteModal";
+import ConfirmModal from "../components/profile/modals/ConfirmModal";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -37,33 +39,58 @@ function ProfilePage() {
 
   // Address state
   const [address, setAddress] = useState({
-    list: [
-      {
-        id: 1,
-        type: "Home",
-        address: "123 Sweet Street, Block A",
-        city: "Delhi",
-        pincode: "110001",
-        isDefault: true,
-      },
-      {
-        id: 2,
-        type: "Work",
-        address: "456 Business Plaza, Sector 18",
-        city: "Noida",
-        pincode: "201301",
-        isDefault: false,
-      },
-    ],
+    list: [],
     showForm: false,
     editingIndex: null,
     newAddress: {
-      type: "Home",
-      address: "",
+      fullName: "",
+      phone: "",
+      street: "",
       city: "",
-      pincode: "",
+      state: "",
+      postalCode: "",
+      country: "",
+      label: "Home",
+      isDefault: false,
     },
   });
+
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [ordersError, setOrdersError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setOrdersLoading(true);
+        const data = await OrderApi.getMyOrders();
+        setOrders(data?.orders || []);
+      } catch (err) {
+        setOrdersError(err.message || "Failed to load orders");
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const data = await AddressApi.getAddresses();
+
+      setAddress((prev) => ({
+        ...prev,
+        list: data || [],
+      }));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
 
   // UI state
   const [ui, setUi] = useState({
@@ -73,31 +100,6 @@ function ProfilePage() {
 
   if (loading || !user)
     return <p className="text-center py-8 text-amber-600">Loading...</p>;
-
-  // Mock orders data
-  const orders = [
-    {
-      id: "#ORD001",
-      date: "2024-03-15",
-      items: "Gulab Jamun (1kg), Kaju Katli (500g)",
-      total: "₹1,250",
-      status: "Delivered",
-    },
-    {
-      id: "#ORD002",
-      date: "2024-03-10",
-      items: "Rasgulla (1kg), Ladoo (500g)",
-      total: "₹950",
-      status: "Shipped",
-    },
-    {
-      id: "#ORD003",
-      date: "2024-03-05",
-      items: "Barfi (500g), Jalebi (1kg)",
-      total: "₹800",
-      status: "Processing",
-    },
-  ];
 
   const handleUpdateProfile = async () => {
     try {
@@ -162,54 +164,73 @@ function ProfilePage() {
     alert(`Adding items from order ${orderId} to cart!`);
   };
 
-  const handleAddAddress = () => {
-    if (address.editingIndex !== null) {
-      // Update existing address
-      const updatedAddresses = address.list.map((addr, index) =>
-        index === address.editingIndex
-          ? { ...address.newAddress, id: addr.id }
-          : addr,
-      );
+  const handleAddAddress = async () => {
+    try {
+      if (address.editingIndex) {
+        await AddressApi.updateAddress(
+          address.editingIndex,
+          address.newAddress,
+        );
+      } else {
+        await AddressApi.addAddress(address.newAddress);
+      }
+
+      await fetchAddresses();
+
       setAddress((prev) => ({
         ...prev,
-        list: updatedAddresses,
+        showForm: false,
+        editingIndex: null,
+        newAddress: {
+          fullName: "",
+          phone: "",
+          street: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "",
+          label: "Home",
+          isDefault: false,
+        },
       }));
-    } else {
-      // Add new address
-      setAddress((prev) => ({
-        ...prev,
-        list: [
-          ...prev.list,
-          { ...prev.newAddress, id: prev.list.length + 1, isDefault: false },
-        ],
-      }));
+    } catch (error) {
+      console.error(error);
     }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      await AddressApi.deleteAddress(addressId);
+      await fetchAddresses();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSetDefaultAddress = async (addressId) => {
+    try {
+      await AddressApi.setDefaultAddress(addressId);
+      await fetchAddresses();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEditAddress = (addressItem) => {
     setAddress((prev) => ({
       ...prev,
-      showForm: false,
-      editingIndex: null,
-      newAddress: { type: "Home", address: "", city: "", pincode: "" },
-    }));
-  };
-
-  const handleDeleteAddress = (index) => {
-    const updatedAddresses = address.list.filter((_, i) => i !== index);
-    setAddress((prev) => ({ ...prev, list: updatedAddresses }));
-  };
-
-  const handleSetDefaultAddress = (index) => {
-    const updatedAddresses = address.list.map((addr, i) => ({
-      ...addr,
-      isDefault: i === index,
-    }));
-    setAddress((prev) => ({ ...prev, list: updatedAddresses }));
-  };
-
-  const handleEditAddress = (index) => {
-    setAddress((prev) => ({
-      ...prev,
-      editingIndex: index,
-      newAddress: prev.list[index],
+      editingIndex: addressItem._id,
+      newAddress: {
+        fullName: addressItem.fullName,
+        phone: addressItem.phone,
+        street: addressItem.street,
+        city: addressItem.city,
+        state: addressItem.state,
+        postalCode: addressItem.postalCode,
+        country: addressItem.country,
+        label: addressItem.label,
+        isDefault: addressItem.isDefault,
+      },
       showForm: true,
     }));
   };
@@ -275,6 +296,8 @@ function ProfilePage() {
             {ui.activeTab === "orders" && (
               <OrdersTab
                 orders={orders}
+                ordersLoading={ordersLoading}
+                ordersError={ordersError}
                 actions={{
                   onReorder: handleReorder,
                 }}
@@ -304,12 +327,16 @@ function ProfilePage() {
           onSubmit={handlePasswordSubmit}
         />
 
-        <DeleteModal
-          showDeleteConfirm={ui.showDeleteConfirm}
-          setShowDeleteConfirm={(show) =>
-            setUi((prev) => ({ ...prev, showDeleteConfirm: show }))
+        <ConfirmModal
+          open={ui.showDeleteConfirm}
+          title="Delete Account?"
+          description="This action cannot be undone. All your data will be permanently removed."
+          confirmText="Yes, Delete"
+          confirmVariant="danger"
+          onConfirm={handleDeleteAccount}
+          onCancel={() =>
+            setUi((prev) => ({ ...prev, showDeleteConfirm: false }))
           }
-          onDeleteAccount={handleDeleteAccount}
         />
       </div>
     </div>

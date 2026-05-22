@@ -2,6 +2,7 @@
 // Controlled form with local state + validation
 
 import { useState } from "react";
+import Button from "../ui/Button";
 
 function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
   // Local form state (controlled inputs)
@@ -292,18 +293,18 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
 
         {/* Form Actions */}
         <div className="flex justify-end gap-4 pt-6 border-t border-amber-100">
-          <button
-            type="button"
+          <Button
             onClick={onCancel}
-            className="px-6 py-3 border-2 border-amber-300 text-amber-700 font-semibold rounded-xl hover:bg-amber-50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="outline"
             disabled={loading}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            variant="primary"
+            className="hover:scale-105"
           >
             {loading ? (
               <>
@@ -321,7 +322,7 @@ function ProductForm({ mode, initialData, onSubmit, onCancel, loading }) {
                 Update Product
               </>
             )}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

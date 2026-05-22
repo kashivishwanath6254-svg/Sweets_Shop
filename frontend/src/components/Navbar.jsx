@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import Button from "./ui/Button";
 
 function Navbar() {
   const { user, logout, isAuthenticated } = useContext(AuthContext);
@@ -73,19 +74,13 @@ function Navbar() {
         {/* Login/Logout Button */}
         <div className="hidden md:flex">
           {isAuthenticated ? (
-            <button
-              onClick={handleLogout}
-              className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
-            >
+            <Button onClick={handleLogout}>
               Logout
-            </button>
+            </Button>
           ) : (
-            <button
-              onClick={handleLogin}
-              className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
-            >
+            <Button onClick={handleLogin}>
               Login
-            </button>
+            </Button>
           )}
         </div>
 
@@ -154,19 +149,13 @@ function Navbar() {
 
         {/* Mobile CTA Button */}
         {isAuthenticated ? (
-          <button
-            onClick={handleLogout}
-            className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
-          >
+          <Button onClick={handleLogout}>
             Logout
-          </button>
+          </Button>
         ) : (
-          <button
-            onClick={handleLogin}
-            className="px-6 py-2 bg-linear-to-r from-amber-500 to-amber-400 text-amber-50 font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-amber-500/25 hover:scale-105 border border-amber-300/30"
-          >
+          <Button onClick={handleLogin}>
             Login
-          </button>
+          </Button>
         )}
 
         {/* Contact info in mobile drawer */}

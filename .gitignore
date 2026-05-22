@@ -1,6 +1,5 @@
 # Global ignores
 .env
-.env.*
 .codiumignore
 node_modules
 **/node_modules/

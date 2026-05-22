@@ -4,6 +4,7 @@ import { useState } from "react";
 import CartItem from "../components/cart/CartItem";
 import OrderSummary from "../components/cart/OrderSummary";
 import ClearCartModal from "../components/cart/ClearCartModal";
+import Button from "../components/ui/Button";
 
 function Cart() {
   const { cart, loading, error, updateQuantity, removeItem, clearCart } =
@@ -32,12 +33,9 @@ function Cart() {
             Error Loading Cart
           </h3>
           <p className="text-red-500">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-          >
+          <Button variant="danger" onClick={() => window.location.reload()}>
             Try Again
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -56,14 +54,11 @@ function Cart() {
           <p className="text-amber-600 mb-8">
             Looks like you haven't added any sweets to your cart yet.
           </p>
-          <button
-            onClick={() => navigate("/products")}
-            className="px-8 py-4 bg-linear-to-r from-amber-500 to-amber-400 text-white font-semibold rounded-xl hover:from-amber-600 hover:to-amber-500 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center gap-2 mx-auto"
-          >
+          <Button variant="primary" fullWidth onClick={() => navigate("/products")}>
             <span>🍬</span>
             Browse Our Sweets
             <span>→</span>
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -150,20 +145,22 @@ function Cart() {
 
             {/* Clear Cart Button */}
             <div className="flex justify-between items-center pt-4">
-              <button
-                onClick={() => setShowClearConfirm(true)}
-                className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition flex items-center gap-2"
-              >
-                <span>🗑️</span>
-                Clear Cart
-              </button>
-              <button
-                onClick={() => navigate("/products")}
-                className="px-4 py-2 text-amber-600 border border-amber-300 rounded-lg hover:bg-amber-50 transition flex items-center gap-2"
-              >
-                <span>←</span>
-                Continue Shopping
-              </button>
+          <Button
+            onClick={() => setShowClearConfirm(true)}
+            variant="dangerOutline"
+            className="flex items-center gap-2"
+          >
+            <span>🗑️</span>
+            Clear Cart
+          </Button>
+          <Button
+            onClick={() => navigate("/products")}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <span>←</span>
+            Continue Shopping
+          </Button>
             </div>
           </div>
 
