@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { AuthApi } from "../services/AuthApi";
 import { AddressApi } from "../services/AddressApi";
+import { OrderApi } from "../services/OrderApi";
 import PersonalInfoTab from "../components/profile/tabs/PersonalInfoTab";
 import OrdersTab from "../components/profile/tabs/OrdersTab";
 import AddressesTab from "../components/profile/tabs/AddressesTab";
 import PasswordModal from "../components/profile/modals/PasswordModal";
-import DeleteModal from "../components/profile/modals/DeleteModal";
+import ConfirmModal from "../components/profile/modals/ConfirmModal";
 
 function ProfilePage() {
   const navigate = useNavigate();
@@ -54,6 +55,26 @@ function ProfilePage() {
     },
   });
 
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+  const [ordersError, setOrdersError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setOrdersLoading(true);
+        const data = await OrderApi.getMyOrders();
+        setOrders(data?.orders || []);
+      } catch (err) {
+        setOrdersError(err.message || "Failed to load orders");
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   const fetchAddresses = async () => {
     try {
       const data = await AddressApi.getAddresses();
@@ -79,31 +100,6 @@ function ProfilePage() {
 
   if (loading || !user)
     return <p className="text-center py-8 text-amber-600">Loading...</p>;
-
-  // Mock orders data
-  const orders = [
-    {
-      id: "#ORD001",
-      date: "2024-03-15",
-      items: "Gulab Jamun (1kg), Kaju Katli (500g)",
-      total: "₹1,250",
-      status: "Delivered",
-    },
-    {
-      id: "#ORD002",
-      date: "2024-03-10",
-      items: "Rasgulla (1kg), Ladoo (500g)",
-      total: "₹950",
-      status: "Shipped",
-    },
-    {
-      id: "#ORD003",
-      date: "2024-03-05",
-      items: "Barfi (500g), Jalebi (1kg)",
-      total: "₹800",
-      status: "Processing",
-    },
-  ];
 
   const handleUpdateProfile = async () => {
     try {
@@ -300,6 +296,8 @@ function ProfilePage() {
             {ui.activeTab === "orders" && (
               <OrdersTab
                 orders={orders}
+                ordersLoading={ordersLoading}
+                ordersError={ordersError}
                 actions={{
                   onReorder: handleReorder,
                 }}
@@ -329,12 +327,16 @@ function ProfilePage() {
           onSubmit={handlePasswordSubmit}
         />
 
-        <DeleteModal
-          showDeleteConfirm={ui.showDeleteConfirm}
-          setShowDeleteConfirm={(show) =>
-            setUi((prev) => ({ ...prev, showDeleteConfirm: show }))
+        <ConfirmModal
+          open={ui.showDeleteConfirm}
+          title="Delete Account?"
+          description="This action cannot be undone. All your data will be permanently removed."
+          confirmText="Yes, Delete"
+          confirmVariant="danger"
+          onConfirm={handleDeleteAccount}
+          onCancel={() =>
+            setUi((prev) => ({ ...prev, showDeleteConfirm: false }))
           }
-          onDeleteAccount={handleDeleteAccount}
         />
       </div>
     </div>

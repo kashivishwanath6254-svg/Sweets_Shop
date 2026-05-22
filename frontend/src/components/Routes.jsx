@@ -15,6 +15,7 @@ import ProtectedLoginRoute from "./Admin/ProtectedLoginRoute";
 import ProfilePage from "../pages/ProfilePage";
 import Cart from "../pages/Cart";
 import Checkout from "../pages/Checkout";
+import OrderDetailsPage from "../pages/OrderDetailsPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,6 +27,7 @@ const router = createBrowserRouter(
       <Route path="profile" element={<ProfilePage />} />
       <Route path="cart" element={<Cart />} />
       <Route path="checkout" element={<Checkout />} />
+      <Route path="orders/:orderId" element={<OrderDetailsPage />} />
       <Route
         path="admin"
         element={
