@@ -162,7 +162,7 @@ function Checkout() {
     } catch (error) {
       console.error("Order placement failed:", error);
       setPlaceOrderError(
-        error.response?.message || "Failed to place order. Please try again.",
+        error.message || "Failed to place order. Please try again.",
       );
     } finally {
       setIsPlacingOrder(false);
