@@ -1,5 +1,6 @@
 import { Cart } from "../models/cart.models.js";
 import { Order } from "../models/order.models.js";
+import { Product } from "../models/products.models.js";
 
 export const createOrder = async (req, res, next) => {
   try {
@@ -41,13 +42,6 @@ export const createOrder = async (req, res, next) => {
           message: `${product.name} is currently unavailable`,
         });
       }
-
-      //Not enough Stock
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `Only ${product.stock} units of ${product.name} left in stock`,
-        });
-      }
     }
 
     const orderItems = cart.items.map((item) => ({
@@ -69,6 +63,37 @@ export const createOrder = async (req, res, next) => {
 
     const totalAmount = Number((subtotal + deliveryFee + tax).toFixed(2));
 
+    for (const item of cart.items) {
+      const updatedProduct = await Product.findOneAndUpdate(
+        {
+          _id: item.product._id,
+
+          //only update if enough stock exists
+          stock: { $gte: item.quantity },
+          isAvailable: true,
+        },
+        {
+          $inc: {
+            stock: -item.quantity,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      if (!updatedProduct) {
+        return res.status(400).json({
+          message: `Only ${item.product.stock} units available for ${item.product.name}`,
+        });
+      }
+
+      if (updatedProduct.stock === 0) {
+        updatedProduct.isAvailable = false;
+        await updatedProduct.save();
+      }
+    }
+
     const order = await Order.create({
       user: userId,
       items: orderItems,
@@ -80,21 +105,10 @@ export const createOrder = async (req, res, next) => {
       paymentMethod: paymentMethod || "COD",
     });
 
-    for (const item of cart.items) {
-      const product = item.product;
-
-      product.stock -= item.quantity;
-
-      if (product.stock <= 0) {
-        product.isAvailable = false;
-      }
-
-      await product.save();
-    }
-
     await Cart.findByIdAndUpdate(cart._id, {
       $set: { items: [] },
     });
+
 
     return res.status(201).json({
       message: "Order placed successfully",
