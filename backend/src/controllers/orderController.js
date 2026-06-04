@@ -169,40 +169,39 @@ export const cancelOrder = async (req, res, next) => {
     const userId = req.user.id;
     const orderId = req.params.orderId;
 
-    const order = await Order.findById(orderId).populate("items.product");
+    const order = await Order.findOneAndUpdate(
+      {
+        _id: orderId,
+        user: userId,
+        orderStatus: { $in: ["PLACED", "CONFIRMED"] }
+      },
+      {
+        $set: { orderStatus: "CANCELLED" }
+      },
+      {
+        new: true
+      }
+    );
 
     //Order not found
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    //OwnerShip check
-    if (order.user.toString() !== userId) {
-      return res.status(403).json({ message: "Unauthorized access to order" });
-    }
-
-    //Checking if order can be cancelled
-    if (order.orderStatus !== "PLACED" && order.orderStatus !== "CONFIRMED") {
-      return res.status(400).json({
-        message: "Order cannot be cancelled!",
-      });
+      return res.status(409).json({ message: "Order cannot be cancelled or was not found" });
     }
 
     //Restoring stock
     for (const item of order.items) {
+
       if (!item.product) continue;
 
-      item.product.stock += item.quantity;
-
-      if (item.product.stock > 0) {
-        item.product.isAvailable = true;
-      }
-
-      await item.product.save();
+      await Product.updateOne(
+        { _id: item.product._id },
+        {
+          $inc: { stock: item.quantity },
+          $set: { isAvailable: true },
+        }
+      );
     }
 
-    order.orderStatus = "CANCELLED";
-    await order.save();
 
     return res.status(200).json({
       message: "Order canceled successfully",
