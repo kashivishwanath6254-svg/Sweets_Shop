@@ -1,101 +1,166 @@
-# 🍬 Sweets Shop – Full Stack Web Application
 
-A full-stack sweets shop web application built using the **MERN stack**.  
-This project was built as a full-stack MERN learning project focused on real-world ecommerce functionality and backend architecture.
+# 🍬 Sweets Shop
+
+A full-stack e-commerce web application built with the MERN stack (MongoDB, Express.js, React, Node.js).
+
+The project was developed to explore real-world e-commerce architecture, including authentication, role-based authorization, inventory management, order processing, and admin workflow control.
 
 ---
-## 🌐 Deployed Application
 
-- App URL: https://sweets-shop-backend.onrender.com
+## 🌐 Live Demo
 
-> The frontend production build is served through the Express backend.
+**Application:** https://sweets-shop-backend.onrender.com
+
+> The React frontend is served through the Express backend in production.
 
 ### Demo Credentials
 
 ```txt
-Admin:
+Admin
 Email: admin@sweets.com
 Password: admin123
 
-User:
+User
 Email: test@gmail.com
 Password: test123
 ```
-
-## 🛠 Tech Stack
-
-### Frontend
-
-- React (Vite)
-- React Router
-- TailwindCSS
-- JavaScript (ES6+)
-
-### Backend
-
-- Node.js
-- Express.js
-- MongoDB (Atlas)
-- Mongoose
-- JWT Authentication
-- bcrypt for password hashing
 
 ---
 
 ## 🚀 Features
 
-### Implemented
+### Authentication & Authorization
 
-- **Authentication System**: User registration, login, logout, and JWT cookie-based authentication
-- **Role-Based Authorization**: Separate admin and user access control
-- **Product Management**: Admin product creation, editing, deletion, and stock management
-- **Shopping Cart**: Add to cart, update quantities, and remove items
-- **Address Management**: Multiple saved addresses with default address support
-- **Checkout & Orders**: Address selection, order placement, stock validation, and order history
-- **User Profile**: Profile management and personal order viewing
-- **Responsive Frontend**: Fully responsive UI built with TailwindCSS
-- **Frontend Routing**: SPA routing using React Router
-- **REST API**: Structured RESTful backend with centralized error handling
-- **Database Integration**: MongoDB Atlas with Mongoose schemas and relationships
+* User registration and login
+* JWT cookie-based authentication
+* Protected routes
+* Role-based access control (Admin/User)
 
-### Pages
+### Product Management
 
-- Home
-- Products
-- About
-- Contact
-- Cart
-- Checkout
-- Profile
-- Admin Panel
+* Product catalog browsing
+* Product CRUD operations (Admin)
+* Inventory management
+* Stock tracking
 
-### Planned
+### Shopping Experience
 
-- Payment integration
-- Order tracking
-- Email notifications
-- Advanced admin analytics
+* Shopping cart
+* Address management
+* Checkout flow
+* Order placement
+* Order history
+* Order cancellation
+* Reorder functionality
+
+### Admin Dashboard
+
+* Product management
+* Order monitoring dashboard
+* Order status management
+* Workflow enforcement
 
 ---
 
-## 🧑‍💻 Running the Project Locally
+## 📦 Order Lifecycle
+
+Orders follow a controlled workflow:
+
+```txt
+PLACED
+  ↓
+CONFIRMED
+  ↓
+PREPARING
+  ↓
+OUT_FOR_DELIVERY
+  ↓
+DELIVERED
+```
+
+The backend validates status transitions and prevents invalid workflow changes.
+
+---
+
+## 🛡 Inventory Management
+
+The application includes inventory protection mechanisms:
+
+* Atomic stock updates using MongoDB update operators and conditional queries
+* Overselling prevention
+* Automatic stock restoration when orders are cancelled
+* Consistent inventory tracking throughout the order lifecycle
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+
+* React
+* React Router
+* Tailwind CSS
+* Vite
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB Atlas
+* Mongoose
+* JWT Authentication
+* bcrypt
+
+### Deployment
+
+* Render
+* MongoDB Atlas
+
+---
+
+## ⚙️ Installation & Setup
 
 ### Prerequisites
 
-- Node.js installed
-- MongoDB Atlas account (or local MongoDB)
-- pnpm (preferred) or npm
+* Node.js
+* MongoDB Atlas account (or local MongoDB)
+* pnpm
+
+### Clone Repository
+
+```bash
+git clone https://github.com/kashivishwanath6254-svg/Sweets_Shop.git
+cd Sweets_Shop
+```
 
 ### Backend Setup
 
 ```bash
 cd backend
 pnpm install
-cp .env.example .env  # Configure your environment variables
-pnpm run dev
+cp .env.example .env
 ```
 
-Backend runs on the port defined in the `.env` file or on 3000 as default.
+Configure your `.env` file:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=3000
+NODE_ENV=development
+```
+
+Seed admin user:
+
+```bash
+pnpm run seed:admin
+```
+
+Start backend:
+
+```bash
+pnpm run dev
+```
 
 ### Frontend Setup
 
@@ -105,60 +170,96 @@ pnpm install
 pnpm run dev
 ```
 
-Frontend runs on Vite's default development port.
-
-### Seeding Admin User
-
-```bash
-cd backend
-pnpm run seed:admin
-```
-
 ---
 
-## 📁 Project Structure
+## 🧑‍💻 Project Structure
 
 ```
 Sweets_Shop/
 ├── backend/
 │   ├── src/
-│   │   ├── controllers/    # Request handlers
-│   │   ├── models/         # Mongoose models
-│   │   ├── routes/         # API routes
-│   │   ├── middlewares/    # Custom middleware
-│   │   ├── db/             # Database connection
-│   │   ├── seed/           # Database seeding scripts
-│   │   ├── app.js          # Express app configuration
+│   │   ├── controllers/    # Handles request logic
+│   │   ├── models/         # Mongoose schemas/models
+│   │   ├── routes/         # API route definitions
+│   │   ├── middlewares/    # Custom middleware functions (auth, admin, error handling)
+│   │   ├── db/             # Database connection logic
+│   │   ├── seed/           # Scripts for seeding database (e.g., admin user)
+│   │   ├── public/         # Static assets served by Express
+│   │   ├── app.js          # Express application setup
 │   │   └── index.js        # Server entry point
-│   ├── .env                # Environment variables
-│   └── package.json
+│   ├── .env                # Environment variables (DO NOT COMMIT)
+│   ├── .env.example        # Example environment variables
+│   ├── package.json        # Backend dependencies and scripts
+│   └── ...
 ├── frontend/
 │   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── context/        # React context
-│   │   ├── services/       # API services
-│   │   ├── hooks/          # Custom hooks
-│   │   ├── config/         # Configuration files
-│   │   └── constants/      # Constants
-│   └── package.json
-└── README.md
+│   │   ├── assets/         # Static assets like CSS, images
+│   │   ├── components/     # Reusable UI components (Admin, Cart, UI elements, etc.)
+│   │   ├── context/        # React Context API providers (Auth, Cart)
+│   │   ├── hooks/          # Custom React hooks (e.g., useCart)
+│   │   ├── pages/          # Top-level page components (Home, Products, Admin, etc.)
+│   │   ├── services/       # API service functions (AuthApi, CartApi, ProductApi)
+│   │   ├── config/         # Configuration files (e.g., API endpoints)
+│   │   ├── data/           # App entry point and routing setup
+│   │   └── index.css       # Main CSS file (imports Tailwind)
+│   ├── public/             # Publicly accessible static assets (index.html)
+│   ├── index.html          # Main HTML entry point
+│   ├── package.json        # Frontend dependencies and scripts
+│   └── vite.config.js      # Vite build configuration
+└── README.md               # Project documentation
 ```
 
 ---
 
-## 🔑 Environment Variables
+## 📚 API Reference (Backend Routes)
 
-Backend requires the following environment variables in `.env`:
+*   **Authentication (`/api/users`)**
+    *   `POST /register`: Register a new user.
+    *   `POST /login`: Log in an existing user.
+    *   `POST /logout`: Log out the current user.
+    *   `GET /me`: Get the currently logged-in user's information.
+    *   `PATCH /updateProfile`: Update the current user's profile.
+    *   `PATCH /changePassword`: Change the current user's password.
 
-```
-MONGODB_URI=your_mongodb_connection_string
-PORT=3000
-JWT_SECRET=your_jwt_secret_key
-```
+*   **Products (`/api/products` & `/api/admin/products`)**
+    *   `GET /api/products`: Get all products, grouped by category.
+    *   `GET /api/admin/products`: Get all products (Admin).
+    *   `POST /api/admin/products`: Create a new product (Admin).
+    *   `PUT /api/admin/products/:id`: Update a product by ID (Admin).
+    *   `DELETE /api/admin/products/:id`: Delete a product by ID (Admin).
+
+*   **Cart (`/api/cart`)**
+    *   `POST /add`: Add a product to the cart.
+    *   `GET /get`: Get the user's current cart.
+    *   `PUT /update`: Update the quantity of a product in the cart.
+    *   `DELETE /clear`: Clear all items from the cart.
+    *   `DELETE /remove/:productId`: Remove a specific product from the cart.
+
+*   **Orders (`/api/orders` & `/api/admin/orders`)**
+    *   `POST /`: Create a new order.
+    *   `GET /`: Get the current user's order history.
+    *   `GET /:orderId`: Get details of a specific order by ID.
+    *   `PATCH /cancel/:orderId`: Cancel an order by ID.
+    *   `GET /api/admin/orders`: Get all orders (Admin).
+    *   `PATCH /api/admin/orders/status/:orderId`: Update the status of an order (Admin).
+
+*   **Addresses (`/api/address`)**
+    *   `POST /add`: Add a new shipping address.
+    *   `GET /get`: Get all saved addresses for the user.
+    *   `PUT /update/:addressId`: Update an existing address.
+    *   `DELETE /delete/:addressId`: Delete an address.
+    *   `PATCH /default/:addressId`: Set an address as the default.
+
 
 ---
 
-## 📄 License
+## 🚧 Future Improvements
 
-ISC
+* Payment gateway integration
+* Email notifications
+* Order status history
+* Analytics dashboard
+* Product image uploads
+* Pagination and advanced filtering
+
+
