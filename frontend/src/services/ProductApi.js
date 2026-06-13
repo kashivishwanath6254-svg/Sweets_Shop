@@ -1,7 +1,7 @@
 // src/services/ProductApi.js
-import { BASE_URL } from "../constants/constants.js";
+import { API_ENDPOINTS } from "../config/api.js";
 
-
+const BASE_URL = `${API_ENDPOINTS.ADMIN}/products`;
 
 export const ProductApi = {
   getProducts: async () => {
@@ -21,7 +21,7 @@ export const ProductApi = {
     //Add a new product
     const response = await fetch(BASE_URL, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(product),
       credentials: "include",
     });
@@ -36,7 +36,7 @@ export const ProductApi = {
     //Update a product
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "PUT",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updates),
       credentials: "include",
     });
@@ -51,7 +51,7 @@ export const ProductApi = {
     //Delete a product
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: "DELETE",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
     });
     if (!response.ok) {
