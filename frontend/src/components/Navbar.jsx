@@ -27,6 +27,7 @@ function Navbar() {
     { path: "/contact", label: "Contact Us" },
 
     ...(isAdmin ? [{ path: "/admin", label: "Admin" }] : []),
+    ...(isAdmin ? [{ path: "/adminOrder", label: "Orders" }] : []),
     ...(isCustomer ? [{ path: "/cart", label: "Cart" }] : []),
     ...(isCustomer ? [{ path: "/profile", label: "Profile" }] : []),
   ];
@@ -54,10 +55,9 @@ function Navbar() {
                 to={path.path}
                 className={({ isActive }) =>
                   `relative transition-all duration-500 pb-2 font-medium
-                  ${
-                    isActive
-                      ? "text-amber-100 [text-shadow:0_0_10px_rgba(251,191,36,0.8)]"
-                      : "text-amber-200/90 hover:text-amber-100 hover:scale-105"
+                  ${isActive
+                    ? "text-amber-100 [text-shadow:0_0_10px_rgba(251,191,36,0.8)]"
+                    : "text-amber-200/90 hover:text-amber-100 hover:scale-105"
                   }
                   after:content-[''] after:absolute after:left-0 after:bottom-0 
                   after:h-0.5 after:w-full after:bg-linear-to-r after:from-amber-400 after:to-amber-300 
@@ -90,19 +90,16 @@ function Navbar() {
           onClick={() => setIsOpen(!isOpen)}
         >
           <span
-            className={`block h-0.5 w-6 bg-amber-200 transition-all duration-300 ${
-              isOpen ? "rotate-45 translate-y-2" : ""
-            }`}
+            className={`block h-0.5 w-6 bg-amber-200 transition-all duration-300 ${isOpen ? "rotate-45 translate-y-2" : ""
+              }`}
           ></span>
           <span
-            className={`block h-0.5 w-6 bg-amber-200 transition-all duration-300 ${
-              isOpen ? "opacity-0 -translate-x-4" : ""
-            }`}
+            className={`block h-0.5 w-6 bg-amber-200 transition-all duration-300 ${isOpen ? "opacity-0 -translate-x-4" : ""
+              }`}
           ></span>
           <span
-            className={`block h-0.5 w-6 bg-amber-200 transition-all duration-300 ${
-              isOpen ? "-rotate-45 -translate-y-2" : ""
-            }`}
+            className={`block h-0.5 w-6 bg-amber-200 transition-all duration-300 ${isOpen ? "-rotate-45 -translate-y-2" : ""
+              }`}
           ></span>
         </button>
       </div>
@@ -136,10 +133,9 @@ function Navbar() {
             onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `text-amber-100 text-xl font-medium tracking-wide transition-all duration-300 py-3 px-4 rounded-xl
-              ${
-                isActive
-                  ? "bg-amber-700/50 text-amber-50 shadow-inner border border-amber-500/30"
-                  : "hover:bg-amber-700/30 hover:scale-105 hover:shadow-lg"
+              ${isActive
+                ? "bg-amber-700/50 text-amber-50 shadow-inner border border-amber-500/30"
+                : "hover:bg-amber-700/30 hover:scale-105 hover:shadow-lg"
               }`
             }
           >

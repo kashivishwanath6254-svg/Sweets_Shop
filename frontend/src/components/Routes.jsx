@@ -16,6 +16,7 @@ import ProfilePage from "../pages/ProfilePage";
 import Cart from "../pages/Cart";
 import Checkout from "../pages/Checkout";
 import OrderDetailsPage from "../pages/OrderDetailsPage";
+import AdminOrdersPage from "../pages/AdminOrdersPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +34,14 @@ const router = createBrowserRouter(
         element={
           <ProtectedAdminRoute>
             <AdminPanel />
+          </ProtectedAdminRoute>
+        }
+      />
+      <Route
+        path="adminOrder"
+        element={
+          <ProtectedAdminRoute>
+            <AdminOrdersPage />
           </ProtectedAdminRoute>
         }
       />
